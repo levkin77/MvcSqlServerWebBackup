@@ -21,6 +21,9 @@ namespace MvcSqlServerWebBackup.Models
     /// </summary>
     public class ModelConnectionViewEdit: ModelConnectionView
     {
+        /// <summary>
+        /// Использовать данную строку соединения, вместо указанных данных
+        /// </summary>
         public bool UseAdvancedConnection { get; set; }
         public bool IntegratedSecurity { get; set; }
         public string Password { get; set; }

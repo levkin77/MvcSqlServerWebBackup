@@ -1,0 +1,30 @@
+﻿@model MvcSqlServerWebBackup.Models.ModelConnectionViewEdit
+@{
+    ViewBag.Title = "CnnDetails";
+}
+
+<h2>CnnDetails</h2>
+<div>
+    <h4>CnnDetails</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ServerName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ServerName)
+        </dd>
+
+    </dl>
+</div>
+
+<p>
+    @Html.ActionLink("Изменить", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Назад к списку", "Index")
+</p>

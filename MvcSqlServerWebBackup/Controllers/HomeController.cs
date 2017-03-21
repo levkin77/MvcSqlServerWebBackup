@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MvcSqlServerWebBackup.Models;
 
 namespace MvcSqlServerWebBackup.Controllers
 {
@@ -20,9 +21,24 @@ namespace MvcSqlServerWebBackup.Controllers
             return View();
         }
 
-        public ActionResult Contact()
+        
+        /// <summary>
+        /// Настройка провайдеров
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ListDrive()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Настройка провайдеров.";
+
+            return View();
+        }
+        /// <summary>
+        /// Настройка заданий
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ListTask()
+        {
+            ViewBag.Message = "Настройка заданий.";
 
             return View();
         }

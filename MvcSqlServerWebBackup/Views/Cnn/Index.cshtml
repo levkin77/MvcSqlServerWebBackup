@@ -1,0 +1,39 @@
+﻿@model IEnumerable<MvcSqlServerWebBackup.Models.ModelConnectionView>
+@{
+    ViewBag.Title = "Сервера баз данных";
+}
+<h2>@ViewBag.Title.</h2>
+<div class="table-responsive">
+    <table class="table table-condensed table-striped table-hover">
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="10">Нет данных.</td>
+            </tr>
+        }
+        else
+        {
+            <thead>
+            <tr class="bg-primary">
+                <th class="col-sm-1"></th>
+                <th class="col-sm-2">Сервер</th>
+                <th class="col-sm-9">База данных</th>
+                
+            </tr>
+            </thead>
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("Edit", new { id = item.Id })"><span class="glyphicon glyphicon-edit"> </span></a>
+                        <a href="@Url.Action("Details", new { id = item.Id })"><span class="glyphicon glyphicon-option-horizontal"></span></a>
+                        <a href="@Url.Action("Delete", new { id = item.Id })"><span class="glyphicon glyphicon-remove"></span></a>
+                    </td>
+                    <td>@item.ServerName</td>
+                    <td>@item.Name</td>
+                    
+                </tr>
+            }
+        }
+</table>
+</div>  

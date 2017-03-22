@@ -30,7 +30,7 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new ModelBackupTaskViewEdit() { Id = item.Id, Memo = item.Memo, Provider = item.Provider, Name = item.Name });
+            return View(new ModelBackupTaskViewEdit() { Id = item.Id, Name = item.Name, Memo = item.Memo});
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

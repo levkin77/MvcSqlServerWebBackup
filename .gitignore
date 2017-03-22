@@ -250,3 +250,6 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/MvcSqlServerWebBackup/App_Data/BackupTasks.xml
+/MvcSqlServerWebBackup/App_Data/CloudDrives.xml
+/MvcSqlServerWebBackup/App_Data/ServerConnection.xml

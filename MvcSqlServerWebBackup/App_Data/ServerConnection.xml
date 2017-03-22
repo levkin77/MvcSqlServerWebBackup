@@ -19,15 +19,6 @@
     <IntegratedSecurity>false</IntegratedSecurity>
   </ServerConnection>
   <ServerConnection>
-    <Id>14a18540-7fe0-4b4c-826b-07b04b9b1b50</Id>
-    <Name>Name_0000000___7</Name>
-    <ServerName>srv-sales-sql00</ServerName>
-    <CanConnect>true</CanConnect>
-    <IsExternal>false</IsExternal>
-    <UseAdvancedConnection>false</UseAdvancedConnection>
-    <IntegratedSecurity>false</IntegratedSecurity>
-  </ServerConnection>
-  <ServerConnection>
     <Id>a24e2b90-994b-4c8d-b9ed-71d06aedadc9</Id>
     <Name>Name_0000000___8</Name>
     <ServerName>.</ServerName>

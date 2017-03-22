@@ -5,7 +5,7 @@ namespace MvcSqlServerWebBackup.Models
     /// <summary>
     /// Модель задания
     /// </summary>
-    public class ModelTaskView: ModelBase
+    public class ModelBackupTaskView : ModelBase
     {
         public string ServerName { get; set; }
         public string DbName { get; set; }
@@ -13,5 +13,10 @@ namespace MvcSqlServerWebBackup.Models
         public string LastStatus { get; set; }
 
         public DateTime LastRun { get; set; }
+    }
+
+    public class ModelBackupTaskViewEdit : ModelBackupTaskView
+    {
+        
     }
 }

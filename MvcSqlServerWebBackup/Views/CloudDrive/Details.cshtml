@@ -1,0 +1,30 @@
+﻿@model MvcSqlServerWebBackup.Models.ModelCloudDriveViewEdit
+@{
+    ViewBag.Title = "Информация об бблачном диске";
+}
+
+<h2>Информация об бблачном диске</h2>
+<div>
+    <h4>Текущее соединение: @Model.Name</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Provider)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Provider)
+        </dd>
+
+    </dl>
+</div>
+
+<p>
+    @Html.ActionLink("Изменить", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Назад к списку", "Index")
+</p>

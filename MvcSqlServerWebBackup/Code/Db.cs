@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using MvcSqlServerWebBackup.Models;
@@ -19,30 +18,53 @@ namespace MvcSqlServerWebBackup
         {
             
         }
-
+        /// <summary>
+        /// Текущий контекст базы данных
+        /// </summary>
         public static DbContext Current
         {
             get { return _currentDbContext; }
         }
 
+        #region ServerConnection
+        private List<ServerConnection> _collServerConnections;
         public void Delete(ServerConnection value)
         {
-            if (collConnectionViews != null)
+            if (_collServerConnections != null)
             {
-                var item = collConnectionViews.Find(s => s.Id == value.Id);
+                var item = _collServerConnections.Find(s => s.Id == value.Id);
                 if (item != null)
                 {
-                    collConnectionViews.Remove(item);
+                    _collServerConnections.Remove(item);
+                    SaveServerConnections();
                 }
             }
         }
-        private List<ServerConnection> collConnectionViews;
+
+        public void Save(ServerConnection value)
+        {
+            if (_collServerConnections != null)
+            {
+                var item = _collServerConnections.Find(s => s.Id == value.Id);
+                if (item == null)
+                {
+                    _collServerConnections.Add(item);
+                    SaveServerConnections();
+                }
+                else
+                {
+                    item = value;
+                    SaveServerConnections();
+                }
+            }
+        }
+
         
         public List<ServerConnection> GetServerConnections()
         {
-            if (collConnectionViews == null)
-                collConnectionViews = new List<ServerConnection>();
-            if (collConnectionViews.Count == 0)
+            if (_collServerConnections == null)
+                _collServerConnections = new List<ServerConnection>();
+            if (_collServerConnections.Count == 0)
             {
                 List<ServerConnection> coll = new List<ServerConnection>();
                 for (int i = 0; i < 10; i++)
@@ -51,50 +73,157 @@ namespace MvcSqlServerWebBackup
                     v.CanConnect = (i % 2) > 0;
                     v.ServerName = "ServerName_000" + i;
                     v.Name = "Name_0000000___" + i;
-                    collConnectionViews.Add(v);
+                    _collServerConnections.Add(v);
                 }
             }
-            return collConnectionViews;
+            return _collServerConnections;
         }
-    }
+        #endregion
 
-    public abstract class CoreObject
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Memo { get; set; }
-        public void NewId()
+        #region CloudDrive
+        private List<CloudDrive> _collCloudDrives;
+        public void Delete(CloudDrive value)
         {
-            Id = Guid.NewGuid().ToString();
+            if (_collCloudDrives != null)
+            {
+                var item = _collCloudDrives.Find(s => s.Id == value.Id);
+                if (item != null)
+                {
+                    _collCloudDrives.Remove(item);
+                    SaveCloudDrives();
+                }
+            }
         }
-    }
 
-    public class ServerConnection: CoreObject
-    {
-        /// <summary>
-        /// Сервер баз данных
-        /// </summary>
-        public string ServerName { get; set; }
-        /// <summary>
-        /// Текущее соединение доступно ли 
-        /// </summary>
-        public bool CanConnect { get; set; }
-        /// <summary>
-        /// Используется ли внешнее соединений
-        /// </summary>
-        public bool IsExternal { get; set; }
-
-        public bool UseAdvancedConnection { get; set; }
-        public bool IntegratedSecurity { get; set; }
-        public string Password { get; set; }
-        public string Uid { get; set; }
-        public string ConnectionString { get; set; }
-
-        public static ServerConnection New()
+        public void Save(CloudDrive value)
         {
-            ServerConnection v = new ServerConnection();
-            v.NewId();
-            return v;
+            if (_collCloudDrives != null)
+            {
+                var item = _collCloudDrives.Find(s => s.Id == value.Id);
+                if (item == null)
+                {
+                    _collCloudDrives.Add(item);
+                    SaveCloudDrives();
+                }
+                else
+                {
+                    item = value;
+                    SaveCloudDrives();
+                }
+            }
+        }
+
+        
+
+        public List<CloudDrive> GetCloudDrives()
+        {
+            if (_collCloudDrives == null)
+                _collCloudDrives = new List<CloudDrive>();
+            if (_collCloudDrives.Count == 0)
+            {
+                List<CloudDrive> coll = new List<CloudDrive>();
+                for (int i = 0; i < 10; i++)
+                {
+                    CloudDrive v = CloudDrive.New();
+                    v.CanConnect = (i % 2) > 0;
+                    v.Provider = "Provider" + i;
+                    v.Name = "Name_0000000___" + i;
+                    _collCloudDrives.Add(v);
+                }
+            }
+            return _collCloudDrives;
+        }
+        #endregion
+
+        #region BackupTask
+        private List<BackupTask> _collBackupTasks;
+        public void Delete(BackupTask value)
+        {
+            if (_collBackupTasks != null)
+            {
+                var item = _collBackupTasks.Find(s => s.Id == value.Id);
+                if (item != null)
+                {
+                    _collBackupTasks.Remove(item);
+                    SaveBackupTasks();
+                }
+            }
+        }
+
+        public void Save(BackupTask value)
+        {
+            if (_collBackupTasks != null)
+            {
+                var item = _collBackupTasks.Find(s => s.Id == value.Id);
+                if (item == null)
+                {
+                    _collBackupTasks.Add(item);
+                    SaveBackupTasks();
+                }
+                else
+                {
+                    item = value;
+                    SaveBackupTasks();
+                }
+            }
+        }
+
+        
+
+        public List<BackupTask> GetBackupTasks()
+        {
+            if (_collBackupTasks == null)
+                _collBackupTasks = new List<BackupTask>();
+            if (_collBackupTasks.Count == 0)
+            {
+                List<BackupTask> coll = new List<BackupTask>();
+                for (int i = 0; i < 10; i++)
+                {
+                    BackupTask v = BackupTask.New();
+                    v.Name = "BackupTaskName_0000000___" + i;
+                    _collBackupTasks.Add(v);
+                }
+            }
+            return _collBackupTasks;
+        }
+        #endregion
+
+        public void LoadAllData()
+        {
+            var sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/ServerConnection.xml");
+            if (System.IO.File.Exists(sPath))
+            {
+                var data = ServerConnection.LoadCollection(sPath);
+                _collServerConnections = data;
+            }
+            sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/CloudDrives.xml");
+            if (System.IO.File.Exists(sPath))
+            {
+                var data = CloudDrive.LoadCollection(sPath);
+                _collCloudDrives = data;
+            }
+            sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/BackupTasks.xml");
+            if (System.IO.File.Exists(sPath))
+            {
+                var data = BackupTask.LoadCollection(sPath);
+                _collBackupTasks = data;
+            }
+        }
+
+        public void SaveServerConnections()
+        {
+            var sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/ServerConnection.xml");
+            ServerConnection.SaveCollection(sPath, _collServerConnections);
+        }
+        public void SaveCloudDrives()
+        {
+            var sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/CloudDrives.xml");
+            CloudDrive.SaveCollection(sPath, _collCloudDrives);
+        }
+        public void SaveBackupTasks()
+        {
+            var sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/BackupTasks.xml");
+            BackupTask.SaveCollection(sPath, _collBackupTasks);
         }
     }
 }

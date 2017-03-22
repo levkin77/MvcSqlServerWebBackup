@@ -1,22 +1,22 @@
-п»їusing System.Linq;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using MvcSqlServerWebBackup.Models;
 
 namespace MvcSqlServerWebBackup.Controllers
 {
-    public class CnnController: Controller
+    public class CloudDriveController : Controller
     {
         /// <summary>
-        /// РќР°СЃС‚СЂРѕР№РєР° СЃРѕРµРґРёРЅРµРЅРёР№
+        /// Настройка соединений
         /// </summary>
         /// <returns></returns>
         public ActionResult Index()
         {
-            ViewBag.Message = "РќР°СЃС‚СЂРѕР№РєР° СЃРѕРµРґРёРЅРµРЅРёР№.";
-            var data = DbContext.Current.GetServerConnections();
-            
-            return View(data.Select(s => new ModelConnectionView() { Id = s.Id, Name = s.Name, ServerName = s.ServerName }));
+            ViewBag.Message = "Настройка облачных провайдеров.";
+            var data = DbContext.Current.GetCloudDrives();
+
+            return View(data.Select(s => new ModelCloudDriveView() { Id = s.Id, Name = s.Name, Provider = s.Provider}));
         }
 
         public ActionResult Edit(string id)
@@ -25,35 +25,34 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            var item = DbContext.Current.GetCloudDrives().Find(s => s.Id == id);
             if (item == null)
             {
                 return HttpNotFound();
             }
-            return View(new ModelConnectionViewEdit() { Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name });
+            return View(new ModelCloudDriveViewEdit() { Id = item.Id, Memo = item.Memo, Provider = item.Provider, Name = item.Name });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ServerName,Name,Memo")] ModelConnectionViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider")] ModelCloudDriveViewEdit item)
         {
             if (ModelState.IsValid)
             {
-                //db.Entry(movie).State = EntityState.Modified;
-                //db.SaveChanges();
-                var v = DbContext.Current.GetServerConnections().Find(s => s.Id == item.Id);
+                
+                var v = DbContext.Current.GetCloudDrives().Find(s => s.Id == item.Id);
                 if (v != null)
                 {
-                    v.ServerName = item.ServerName;
                     v.Name = item.Name;
                     v.Memo = item.Memo;
+                    v.Provider = item.Provider;
                 }
                 else
                 {
-                    v= new ServerConnection();
+                    v = new CloudDrive();
                     v.Id = item.Id;
-                    v.ServerName = item.ServerName;
                     v.Name = item.Name;
                     v.Memo = item.Memo;
+                    v.Provider = item.Provider;
 
                 }
                 DbContext.Current.Save(v);
@@ -67,13 +66,13 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
-            
+            var item = DbContext.Current.GetCloudDrives().Find(s => s.Id == id);
+
             if (item == null)
             {
                 return HttpNotFound();
             }
-            return View(new ModelConnectionViewEdit(){Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name});
+            return View(new ModelCloudDriveViewEdit() { Id = item.Id, Name = item.Name, Memo = item.Memo,  Provider = item.Provider });
         }
 
         public ActionResult Delete(string id)
@@ -82,21 +81,19 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            var item = DbContext.Current.GetCloudDrives().Find(s => s.Id == id);
             if (item == null)
             {
                 return HttpNotFound();
             }
-            //ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", album.GenreId);
-            //ViewBag.ArtistId = new SelectList(db.Artists, "ArtistId", "Name", album.ArtistId);
-            return View(new ModelConnectionView() { Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name });
-         }
-        
+            return View(new ModelCloudDriveView() { Id = item.Id, Memo = item.Memo, Name = item.Name, Provider = item.Provider });
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            var item = DbContext.Current.GetCloudDrives().Find(s => s.Id == id);
             if (item != null)
             {
                 DbContext.Current.Delete(item);

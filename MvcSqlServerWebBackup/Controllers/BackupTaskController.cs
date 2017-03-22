@@ -1,22 +1,22 @@
-п»їusing System.Linq;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using MvcSqlServerWebBackup.Models;
 
 namespace MvcSqlServerWebBackup.Controllers
 {
-    public class CnnController: Controller
+    public class BackupTaskController : Controller
     {
         /// <summary>
-        /// РќР°СЃС‚СЂРѕР№РєР° СЃРѕРµРґРёРЅРµРЅРёР№
+        /// Настройка соединений
         /// </summary>
         /// <returns></returns>
         public ActionResult Index()
         {
-            ViewBag.Message = "РќР°СЃС‚СЂРѕР№РєР° СЃРѕРµРґРёРЅРµРЅРёР№.";
-            var data = DbContext.Current.GetServerConnections();
-            
-            return View(data.Select(s => new ModelConnectionView() { Id = s.Id, Name = s.Name, ServerName = s.ServerName }));
+            ViewBag.Message = "Настройка заданий резервного копирования.";
+            var data = DbContext.Current.GetBackupTasks();
+
+            return View(data.Select(s => new ModelBackupTaskView() { Id = s.Id, Name = s.Name, DbName = s.DbName}));
         }
 
         public ActionResult Edit(string id)
@@ -25,36 +25,32 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            var item = DbContext.Current.GetBackupTasks().Find(s => s.Id == id);
             if (item == null)
             {
                 return HttpNotFound();
             }
-            return View(new ModelConnectionViewEdit() { Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name });
+            return View(new ModelBackupTaskViewEdit() { Id = item.Id, Memo = item.Memo, Provider = item.Provider, Name = item.Name });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ServerName,Name,Memo")] ModelConnectionViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider")] ModelBackupTaskViewEdit item)
         {
             if (ModelState.IsValid)
             {
-                //db.Entry(movie).State = EntityState.Modified;
-                //db.SaveChanges();
-                var v = DbContext.Current.GetServerConnections().Find(s => s.Id == item.Id);
+
+                var v = DbContext.Current.GetBackupTasks().Find(s => s.Id == item.Id);
                 if (v != null)
                 {
-                    v.ServerName = item.ServerName;
                     v.Name = item.Name;
                     v.Memo = item.Memo;
                 }
                 else
                 {
-                    v= new ServerConnection();
+                    v = new BackupTask();
                     v.Id = item.Id;
-                    v.ServerName = item.ServerName;
                     v.Name = item.Name;
                     v.Memo = item.Memo;
-
                 }
                 DbContext.Current.Save(v);
                 return RedirectToAction("Index");
@@ -67,13 +63,13 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
-            
+            var item = DbContext.Current.GetBackupTasks().Find(s => s.Id == id);
+
             if (item == null)
             {
                 return HttpNotFound();
             }
-            return View(new ModelConnectionViewEdit(){Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name});
+            return View(new ModelBackupTaskViewEdit() { Id = item.Id, Name = item.Name, Memo = item.Memo, DbName = item.DbName});
         }
 
         public ActionResult Delete(string id)
@@ -82,21 +78,19 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            var item = DbContext.Current.GetBackupTasks().Find(s => s.Id == id);
             if (item == null)
             {
                 return HttpNotFound();
             }
-            //ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", album.GenreId);
-            //ViewBag.ArtistId = new SelectList(db.Artists, "ArtistId", "Name", album.ArtistId);
-            return View(new ModelConnectionView() { Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name });
-         }
-        
+            return View(new ModelBackupTaskView() { Id = item.Id, Memo = item.Memo, Name = item.Name, DbName = item.DbName });
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            var item = DbContext.Current.GetBackupTasks().Find(s => s.Id == id);
             if (item != null)
             {
                 DbContext.Current.Delete(item);

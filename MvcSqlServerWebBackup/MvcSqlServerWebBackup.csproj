@@ -15,7 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MvcSqlServerWebBackup</RootNamespace>
     <AssemblyName>MvcSqlServerWebBackup</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,16 +58,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
@@ -108,6 +107,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
@@ -116,7 +116,13 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Code\BackupTask.cs" />
+    <Compile Include="Code\CloudDrive.cs" />
+    <Compile Include="Code\CoreObject.cs" />
     <Compile Include="Code\Db.cs" />
+    <Compile Include="Code\ServerConnection.cs" />
+    <Compile Include="Controllers\BackupTaskController.cs" />
+    <Compile Include="Controllers\CloudDriveController.cs" />
     <Compile Include="Controllers\CnnController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -125,7 +131,7 @@
     <Compile Include="Models\ModelBase.cs" />
     <Compile Include="Models\ModelCloudDriveView.cs" />
     <Compile Include="Models\ModelConnectionView.cs" />
-    <Compile Include="Models\ModelTaskView.cs" />
+    <Compile Include="Models\ModelBackupTaskView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -178,12 +184,19 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\ListDrive.cshtml" />
     <Content Include="Views\Home\ListTask.cshtml" />
     <Content Include="Views\Cnn\Edit.cshtml" />
     <Content Include="Views\Cnn\Index.cshtml" />
     <Content Include="Views\Cnn\Details.cshtml" />
     <Content Include="Views\Cnn\Delete.cshtml" />
+    <Content Include="Views\CloudDrive\Delete.cshtml" />
+    <Content Include="Views\CloudDrive\Details.cshtml" />
+    <Content Include="Views\CloudDrive\Edit.cshtml" />
+    <Content Include="Views\CloudDrive\Index.cshtml" />
+    <Content Include="Views\BackupTask\Delete.cshtml" />
+    <Content Include="Views\BackupTask\Details.cshtml" />
+    <Content Include="Views\BackupTask\Edit.cshtml" />
+    <Content Include="Views\BackupTask\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

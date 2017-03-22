@@ -2,7 +2,7 @@
 <ArrayOfServerConnection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ServerConnection>
     <Id>7db23a41-a310-462e-9bbe-8e3366752a57</Id>
-    <Name>jkahsfkjashfkj</Name>
+    <Name>SalesCenter</Name>
     <ServerName>srv-sales-sql00</ServerName>
     <CanConnect>true</CanConnect>
     <IsExternal>false</IsExternal>

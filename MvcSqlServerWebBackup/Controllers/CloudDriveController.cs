@@ -30,11 +30,16 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new ModelCloudDriveViewEdit() { Id = item.Id, Memo = item.Memo, Provider = item.Provider, Name = item.Name });
+            return View(new ModelCloudDriveViewEdit() { Id = item.Id,
+                Name = item.Name,
+                Memo = item.Memo,
+                Provider = item.Provider, 
+                Location = item.Location
+            });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider")] ModelCloudDriveViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location")] ModelCloudDriveViewEdit item)
         {
             if (ModelState.IsValid)
             {
@@ -45,6 +50,7 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Name = item.Name;
                     v.Memo = item.Memo;
                     v.Provider = item.Provider;
+                    v.Location = item.Location;
                 }
                 else
                 {
@@ -53,7 +59,7 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Name = item.Name;
                     v.Memo = item.Memo;
                     v.Provider = item.Provider;
-
+                    v.Location = item.Location;
                 }
                 DbContext.Current.Save(v);
                 return RedirectToAction("Index");
@@ -72,7 +78,10 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new ModelCloudDriveViewEdit() { Id = item.Id, Name = item.Name, Memo = item.Memo,  Provider = item.Provider });
+            return View(new ModelCloudDriveViewEdit() { Id = item.Id, Name = item.Name, Memo = item.Memo,
+                Provider = item.Provider,
+                Location = item.Location
+        });
         }
 
         public ActionResult Delete(string id)

@@ -132,6 +132,7 @@
     <Compile Include="Models\ModelCloudDriveView.cs" />
     <Compile Include="Models\ModelConnectionView.cs" />
     <Compile Include="Models\ModelBackupTaskView.cs" />
+    <Compile Include="Models\ModelHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +198,9 @@
     <Content Include="Views\BackupTask\Details.cshtml" />
     <Content Include="Views\BackupTask\Edit.cshtml" />
     <Content Include="Views\BackupTask\Index.cshtml" />
+    <Content Include="Views\BackupTask\ClearStatus.cshtml" />
+    <Content Include="Views\BackupTask\TryValidate.cshtml" />
+    <Content Include="Views\BackupTask\TryRun.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

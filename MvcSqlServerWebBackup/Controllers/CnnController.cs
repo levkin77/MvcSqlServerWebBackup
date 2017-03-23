@@ -30,11 +30,19 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new ModelConnectionViewEdit() { Id = item.Id, Memo = item.Memo, ServerName = item.ServerName, Name = item.Name });
+            return View(new ModelConnectionViewEdit() { Id = item.Id,
+                Name = item.Name,
+                Memo = item.Memo,
+                ServerName = item.ServerName,
+                ConnectionString = item.ConnectionString,
+                Password = item.Password,
+                Uid = item.Uid,
+                IntegratedSecurity = item.IntegratedSecurity
+            });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ServerName,Name,Memo")] ModelConnectionViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo,ServerName,ConnectionString,Password,Uid,IntegratedSecurity")] ModelConnectionViewEdit item)
         {
             if (ModelState.IsValid)
             {
@@ -43,17 +51,25 @@ namespace MvcSqlServerWebBackup.Controllers
                 var v = DbContext.Current.GetServerConnections().Find(s => s.Id == item.Id);
                 if (v != null)
                 {
-                    v.ServerName = item.ServerName;
                     v.Name = item.Name;
                     v.Memo = item.Memo;
+                    v.ServerName = item.ServerName;
+                    v.ConnectionString = item.ConnectionString;
+                    v.Password = item.Password;
+                    v.Uid = item.Uid;
+                    v.IntegratedSecurity = item.IntegratedSecurity;
                 }
                 else
                 {
                     v= new ServerConnection();
                     v.Id = item.Id;
-                    v.ServerName = item.ServerName;
                     v.Name = item.Name;
                     v.Memo = item.Memo;
+                    v.ServerName = item.ServerName;
+                    v.ConnectionString = item.ConnectionString;
+                    v.Password = item.Password;
+                    v.Uid = item.Uid;
+                    v.IntegratedSecurity = item.IntegratedSecurity;
 
                 }
                 DbContext.Current.Save(v);

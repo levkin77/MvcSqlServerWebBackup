@@ -8,11 +8,50 @@ namespace MvcSqlServerWebBackup
     public class BackupTask : CoreObject
     {
         #region Свойства
+        /// <summary>
+        /// Добавлять текущее время и дату к имени файла
+        /// </summary>
+        public bool AddCurrentDateTime { get; set; }
+        /// <summary>
+        /// Использовать сжатие в zip архив
+        /// </summary>
+        public bool UseZip { get; set; }
+        /// <summary>
+        /// Сжатие резервной копии на уровне сервера
+        /// </summary>
+        public int Compression { get; set; }
+        /// <summary>
+        /// Опция CopyOnly для резервной копии
+        /// </summary>
+        public bool CopyOnly { get; set; }
+        /// <summary>
+        /// Идентификатор хранилища
+        /// </summary>
+        public string CloudDriveId { get; set; }
+        /// <summary>
+        /// Использовать множественные локации для хранения резервной копии
+        /// </summary>
+        public string UseMultyLocation { get; set; }
+        /// <summary>
+        /// Имя сервера баз данных
+        /// </summary>
         public string ServerName { get; set; }
+        /// <summary>
+        /// Идентификатор строки соединения
+        /// </summary>
+        public string ConnectionId { get; set; }
+        /// <summary>
+        /// База данных для резервного копирования
+        /// </summary>
         public string DbName { get; set; }
-
+        /// <summary>
+        /// Последнее сообщение о статусе резервного копирования
+        /// </summary>
         public string LastStatus { get; set; }
 
+        /// <summary>
+        /// Дата последнего запуска
+        /// </summary>
         public DateTime LastRun { get; set; }
         #endregion
 

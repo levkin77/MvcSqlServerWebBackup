@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
 using System.Xml.Serialization;
 
 namespace MvcSqlServerWebBackup
 {
+    
     public class ServerConnection: CoreObject
-    {
+    {   
         #region Свойства
         /// <summary>
         /// Сервер баз данных
@@ -76,6 +78,49 @@ namespace MvcSqlServerWebBackup
 
             }
             return values;
+        }
+
+        public static string BuildConnectionString(ServerConnection value)
+        {
+            if (value == null)
+                return null;
+            
+            if (value.UseAdvancedConnection)
+            {
+                return value.ConnectionString;
+            }
+            else
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = value.ServerName;
+                builder.InitialCatalog = value.Name;
+                builder.IntegratedSecurity = value.IntegratedSecurity;
+                if (!value.IntegratedSecurity)
+                {
+                    builder.Password = value.Password?? string.Empty;
+                    builder.UserID = value.Uid?? string.Empty;
+                }
+                
+                return builder.ConnectionString;
+            }
+        }
+
+        public static bool TryConnect(string value)
+        {
+            try
+            {
+                using (SqlConnection cnn = new SqlConnection(value))
+                {
+                    cnn.Open();
+                    cnn.Close();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return false;
         }
     }
 }

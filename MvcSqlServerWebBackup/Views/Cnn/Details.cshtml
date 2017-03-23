@@ -5,23 +5,114 @@
 
 <h2>Информация о соединении</h2>
 <div>
-    <h4>Текущее соединение: @Model.Name</h4>
+    <h4>Текущее соединение: @string.Format("Сервер:{0} База данных: {1}", Model.ServerName, Model.Name) </h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ServerName)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ServerName)
-        </dd>
+    <div>
+        <p>
+            @Html.ActionLink("Назад к списку", "Index")
+        </p>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Действия
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="@Url.Action("Edit", new { id = Model.Id })">Изменить</a></li>
+            <li><a href="@Url.Action("Delete", new { id = Model.Id })">Удалить</a></li>
+        </ul>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Основное</h3>
+        </div>
+        <div class="panel-body">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.LabelFor(model => model.Name, "Сервер")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ServerName)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Name, "База данных")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Memo, "Описание")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Memo)
+                </dd>
+            </dl>
+        </div>
+    </div>
+    
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Строка соединения</h3>
+        </div>
+        <div class="panel-body">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.LabelFor(model => model.Memo, "Windows авторизация")
+                </dt>
+                <dd>
+                    @if (Model.IntegratedSecurity)
+                    {
+                        <span class="glyphicon glyphicon-ok-sign"></span>
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                    }
+                </dd>
 
-    </dl>
+                <dt>
+                    @Html.LabelFor(model => model.Uid, "Пользователь")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Uid)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Password, "Пароль")
+                </dt>
+                <dd>
+                    @if (string.IsNullOrEmpty(Model.Password) || string.IsNullOrWhiteSpace(Model.Password))
+            {
+                        @Html.Label("Не указан")
+                    }
+                    else
+                    {
+                        @Html.Label("Указан")
+                    }
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.UseAdvancedConnection, "Использовать собственную строку соединения")
+                </dt>
+                <dd>
+                    @if (Model.UseAdvancedConnection)
+            {
+                        <span class="glyphicon glyphicon-ok-sign"></span>
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                    }
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Memo, "Собственная строка соединения")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ConnectionString)
+                </dd>
+
+            </dl>
+        </div>
+    </div>
+    
 </div>
 
 <p>

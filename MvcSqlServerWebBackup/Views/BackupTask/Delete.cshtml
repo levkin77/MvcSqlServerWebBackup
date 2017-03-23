@@ -1,4 +1,4 @@
-﻿@model MvcSqlServerWebBackup.Models.ModelBackupTaskView
+﻿@model MvcSqlServerWebBackup.Models.ModelBackupTaskViewDetail
 @{
     ViewBag.Title = "Удаление задания резервного копирования";
 }
@@ -9,13 +9,13 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.LabelFor(model => model.Name, "Наименование")
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Memo)
+            @Html.LabelFor(model => model.Name, "Описание")
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Memo)
@@ -27,8 +27,8 @@
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Удалитиь" class="btn btn-default" /> |
-            @Html.ActionLink("Назад к списку", "Index")
+            @Html.ActionLink("Назад к списку", "Index") |
+            <input type="submit" value="Удалить" class="btn btn-danger" />
         </div>
     }
 </div>

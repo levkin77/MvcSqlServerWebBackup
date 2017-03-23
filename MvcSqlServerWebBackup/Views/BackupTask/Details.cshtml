@@ -1,4 +1,4 @@
-﻿@model MvcSqlServerWebBackup.Models.ModelBackupTaskView
+﻿@model MvcSqlServerWebBackup.Models.ModelBackupTaskViewDetail
 @{
     ViewBag.Title = "Информация об задании резервного копирования";
 }
@@ -7,24 +7,86 @@
 <div>
     <h4>Текущее соединение: @Model.Name</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Memo)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Memo)
-        </dd>
+    <div>
+        <p>
+            @Html.ActionLink("Назад к списку", "Index")
+        </p>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Действия
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="@Url.Action("Edit", new { id = Model.Id })">Изменить</a></li>
+            <li><a href="@Url.Action("Delete", new { id = Model.Id })">Удалить</a></li>
+            <li><a href="@Url.Action("TryValidate", new { id = Model.Id })">Проверить</a></li>
+            <li><a href="@Url.Action("TryRun", new { id = Model.Id })">Выполнить</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="@Url.Action("ClearStatus", new { id = Model.Id })">Сбросить статус</a></li>
+        </ul>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Основное</h3>
+        </div>
+        <div class="panel-body">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.LabelFor(model => model.Name, "Наименование")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.ConnectionInfo, "Информация о соединении")
+                </dt>
+                <dd>
+                    @Html.Raw(@Model.ConnectionInfo)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.CloudDriveInfo, "Информация о хранении")
+                </dt>
+                <dd>
+                    @Html.Raw(@Model.CloudDriveInfo)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Memo, "Описание")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Memo)
+                </dd>
 
-    </dl>
+            </dl>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Статус</h3>
+        </div>
+        <div class="panel-body">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.LabelFor(model => model.LastRun, "Последний запуск")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LastRun)
+                </dd>
+
+                <dt>
+                    @Html.LabelFor(model => model.LastStatus, "Статус")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LastStatus)
+                </dd>
+
+                
+
+            </dl>
+        </div>
+    </div>
 </div>
 
 <p>
-    @Html.ActionLink("Изменить", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Назад к списку", "Index")
 </p>

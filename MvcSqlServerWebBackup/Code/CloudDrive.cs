@@ -7,11 +7,20 @@ namespace MvcSqlServerWebBackup
 {
     public class CloudDrive : CoreObject
     {
+        public const string PROVIDER_GOOGLEDRIVE = "GoogleDrive";
+        public const string PROVIDER_MEGA = "Mega";
+        public const string PROVIDER_FILESYSTEM = "FileSystem";
         #region Свойства
         /// <summary>
         /// Типы провайдеров: MEGA, Mail.ru, Yandex, GoogleDrive, SkyDrive
         /// </summary>
         public string Provider { get; set; }
+        /// <summary>
+        /// Текущее расположение
+        /// </summary>
+        public string Location { get; set; }
+        public string Uid { get; set; }
+        public string Password { get; set; }
         public bool CanConnect { get; set; } 
         #endregion
 

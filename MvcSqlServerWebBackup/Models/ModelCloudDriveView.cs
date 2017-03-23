@@ -17,7 +17,10 @@
     /// </summary>
     public class ModelCloudDriveViewEdit : ModelCloudDriveView
     {
-        
+        /// <summary>
+        /// Текущее расположение
+        /// </summary>
+        public string Location { get; set; }
     }
 
 }

@@ -21,6 +21,15 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Главная", "Index", "Home")</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Разделы<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Резервное копирование", "Index", "BackupTask")</li>
+                            <li>@Html.ActionLink("Сервера", "Index", "Cnn")</li>
+                            <li>@Html.ActionLink("Хранилище", "Index", "CloudDrive")</li>
+                        </ul>
+                    </li>
+
                     <li>@Html.ActionLink("О проекте", "About", "Home")</li>
                 </ul>
             </div>

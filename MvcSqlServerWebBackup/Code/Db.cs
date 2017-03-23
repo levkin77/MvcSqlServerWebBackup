@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using MvcSqlServerWebBackup.Models;
@@ -45,10 +46,10 @@ namespace MvcSqlServerWebBackup
         {
             if (_collServerConnections != null)
             {
-                var item = _collServerConnections.Find(s => s.Id == value.Id);
+                var item = _collServerConnections.FirstOrDefault(s => s.Id == value.Id);
                 if (item == null)
                 {
-                    _collServerConnections.Add(item);
+                    _collServerConnections.Add(value);
                     SaveServerConnections();
                 }
                 else
@@ -86,7 +87,7 @@ namespace MvcSqlServerWebBackup
         {
             if (_collCloudDrives != null)
             {
-                var item = _collCloudDrives.Find(s => s.Id == value.Id);
+                var item = _collCloudDrives.FirstOrDefault(s => s.Id == value.Id);
                 if (item != null)
                 {
                     _collCloudDrives.Remove(item);
@@ -99,10 +100,10 @@ namespace MvcSqlServerWebBackup
         {
             if (_collCloudDrives != null)
             {
-                var item = _collCloudDrives.Find(s => s.Id == value.Id);
+                var item = _collCloudDrives.FirstOrDefault(s => s.Id == value.Id);
                 if (item == null)
                 {
-                    _collCloudDrives.Add(item);
+                    _collCloudDrives.Add(value);
                     SaveCloudDrives();
                 }
                 else
@@ -141,7 +142,7 @@ namespace MvcSqlServerWebBackup
         {
             if (_collBackupTasks != null)
             {
-                var item = _collBackupTasks.Find(s => s.Id == value.Id);
+                var item = _collBackupTasks.FirstOrDefault(s => s.Id == value.Id);
                 if (item != null)
                 {
                     _collBackupTasks.Remove(item);
@@ -154,10 +155,12 @@ namespace MvcSqlServerWebBackup
         {
             if (_collBackupTasks != null)
             {
-                var item = _collBackupTasks.Find(s => s.Id == value.Id);
+                if(value.Id.Equals(Guid.Empty.ToString()))
+                    value.NewId();
+                var item = _collBackupTasks.FirstOrDefault(s => s.Id == value.Id);
                 if (item == null)
                 {
-                    _collBackupTasks.Add(item);
+                    _collBackupTasks.Add(value);
                     SaveBackupTasks();
                 }
                 else

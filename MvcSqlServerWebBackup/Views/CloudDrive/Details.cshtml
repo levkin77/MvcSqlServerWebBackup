@@ -9,18 +9,29 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+           @Html.LabelFor(model => model.Name, "Наименование")
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Provider)
+            @Html.LabelFor(model => model.Provider, "Провайдер")
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Provider)
         </dd>
-
+        <dt>
+            @Html.LabelFor(model => model.Location, "Расположение")
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Location)
+        </dd>
+        <dt>
+            @Html.LabelFor(model => model.Memo, "Описание")
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Memo)
+        </dd>
     </dl>
 </div>
 

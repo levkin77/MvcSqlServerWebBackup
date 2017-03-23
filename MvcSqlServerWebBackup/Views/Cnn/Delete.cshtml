@@ -9,26 +9,18 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.LabelFor(model => model.Name, "Наименование")
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.ServerName)
+            @Html.LabelFor(model => model.ServerName, "Сервер")
         </dt>
         <dd>
             @Html.DisplayFor(model => model.ServerName)
         </dd>
         @*<dt>
-            @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
         <dd>
             @Html.DisplayFor(model => model.Price)
         </dd>
@@ -41,8 +33,9 @@
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Удалитиь" class="btn btn-default" /> |
-            @Html.ActionLink("Назад к списку", "Index")
+            @Html.ActionLink("Назад к списку", "Index") |
+            <input type="submit" value="Удалить" class="btn btn-danger" /> 
+            
         </div>
     }
 </div>

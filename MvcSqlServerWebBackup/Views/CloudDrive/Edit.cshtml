@@ -10,6 +10,9 @@
     <div class="form-horizontal">
         <h4>Текущее соединение: @Model.Name</h4>
         <hr />
+        <div>
+            @Html.ActionLink("Назад к списку", "Index")
+        </div>
         @Html.ValidationSummary(true)
         @Html.HiddenFor(model => model.Id)
         <div class="form-group">
@@ -20,10 +23,22 @@
             </div>
         </div>
         <div class="form-group">
-                @Html.LabelFor(m => m.Provider, "Провайдер", new { @class = "control-label col-md-2" })
+            @Html.LabelFor(m => m.Provider, "Провайдер", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(m => m.Provider, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DropDownListFor(m => m.Provider, new List<SelectListItem>{
+               new SelectListItem(){Text = "GoogleDrive", Value = "GoogleDrive", Selected = @Model.Provider== "GoogleDrive" },
+               new SelectListItem(){Text = "Mega", Value = "Mega", Selected = @Model.Provider== "Mega" },
+               new SelectListItem(){Text = "Файловая система", Value = "FileSystem", Selected = @Model.Provider== "FileSystem" }
+           },
+               new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Provider)
+            </div>
+        </div>
+        <div class="form-group">
+                @Html.LabelFor(m => m.Location, "Расположение", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.Location, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Location)
             </div>
         </div>
         <div class="form-group">
@@ -35,7 +50,7 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Сохранить" class="btn btn-default" />
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
             </div>
         </div>
     </div>

@@ -1,0 +1,67 @@
+﻿@using MvcSqlServerWebBackup.Models
+@model Tuple<ModelBackupTaskViewDetail, Dictionary<string, Tuple<bool, string>>>
+@{
+    ViewBag.Title = "Создание резервной копии";
+    string color = null;
+}
+
+<h2>Создание резервной копии</h2>
+<div>
+    <h4>Задание: @Model.Item1.Name</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.LabelFor(model => model.Item1.Name, "Наименование")
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Item1.Name)
+        </dd>
+        <dt>
+            @Html.LabelFor(model => model.Item1.Memo, "Описание")
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Item1.Memo)
+        </dd>
+        
+    </dl>
+    
+    <table class="table table-hover table-condensed">
+        <thead>
+            <tr class="bg-primary">
+                <th class="col-sm-1"></th>
+                <th class="col-sm-5">Правило</th>
+                <th class="col-sm-6">Информация</th>
+            </tr>
+        </thead>
+        @foreach (var i in Model.Item2.Keys)
+        {
+            color = @Model.Item2[i].Item1 ? "success" : "danger";
+            <tr class="@color">
+                <td>
+                    @{
+                        if (@Model.Item2[i].Item1)
+                        {
+                            <span class="glyphicon glyphicon-ok"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-minus"></span>
+                        }
+                    }
+                </td>
+                <td>@Html.Label(ModelHelper.GetBackupTastValidationCaption(i))</td>
+                <td>@Html.DisplayFor(model => model.Item2[i].Item2)</td>
+            </tr>
+        }
+        
+        @*.active 	Applies the hover color to a particular row or cell
+        .success 	Indicates a successful or positive action
+        .info 	Indicates a neutral informative change or action
+        .warning 	Indicates a warning that might need attention
+        .danger 	Indicates a dangerous or potentially negative action*@
+    </table>
+
+    <div class="form-actions no-color">
+        @Html.ActionLink("Детализация", "Details", new { id = Model.Item1.Id })
+    </div>
+</div>

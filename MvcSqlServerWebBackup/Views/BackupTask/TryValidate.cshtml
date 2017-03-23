@@ -1,0 +1,28 @@
+﻿@model Tuple<MvcSqlServerWebBackup.Models.ModelBackupTaskViewDetail, Dictionary<string, string>>
+@{
+    ViewBag.Title = "Проверка задания резервного копирования";
+}
+
+<h2>Проверка задания резервного копирования?</h2>
+<div>
+    <h4>Задание: @Model.Item1.Name</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.LabelFor(model => model.Item1.Name, "Наименование")
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Item1.Name)
+        </dd>
+        <dt>
+            @Html.LabelFor(model => model.Item1.Memo, "Описание")
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Item1.Memo)
+        </dd>
+        
+    </dl>
+    <div class="form-actions no-color">
+        @Html.ActionLink("Детализация", "Details", new { id = Model.Item1.Id })
+    </div>
+</div>

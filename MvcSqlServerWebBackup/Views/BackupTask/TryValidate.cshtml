@@ -24,7 +24,9 @@
         </dd>
         
     </dl>
-    
+    <div class="form-actions no-color">
+        @Html.ActionLink("Детализация", "Details", new { id = Model.Item1.Id })
+    </div>
     <table class="table table-hover table-condensed">
         <thead>
             <tr class="bg-primary">

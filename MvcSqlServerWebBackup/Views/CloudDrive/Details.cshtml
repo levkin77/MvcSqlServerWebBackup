@@ -7,35 +7,55 @@
 <div>
     <h4>Текущее соединение: @Model.Name</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-           @Html.LabelFor(model => model.Name, "Наименование")
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt>
-            @Html.LabelFor(model => model.Provider, "Провайдер")
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Provider)
-        </dd>
-        <dt>
-            @Html.LabelFor(model => model.Location, "Расположение")
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Location)
-        </dd>
-        <dt>
-            @Html.LabelFor(model => model.Memo, "Описание")
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Memo)
-        </dd>
-    </dl>
+    <div>
+        <p>
+            @Html.ActionLink("Назад к списку", "Index")
+        </p>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Действия
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="@Url.Action("Edit", new { id = Model.Id })">Изменить</a></li>
+            <li><a href="@Url.Action("Delete", new { id = Model.Id })">Удалить</a></li>
+        </ul>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Основное</h3>
+        </div>
+        <div class="panel-body">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.LabelFor(model => model.Name, "Наименование")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Provider, "Провайдер")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Provider)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Location, "Расположение")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Location)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Memo, "Описание")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Memo)
+                </dd>
+            </dl>
+        </div>
+    </div>
 </div>
-
 <p>
-    @Html.ActionLink("Изменить", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Назад к списку", "Index")
 </p>

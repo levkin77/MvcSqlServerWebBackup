@@ -56,7 +56,7 @@ namespace MvcSqlServerWebBackup.Models
             var itemDrive = DbContext.Current.GetCloudDrives().Find(s => s.Id == value.CloudDriveId);
             if (itemDrive != null)
             {
-                model.CloudDriveInfo = string.Format("Провайдер:{0}{1}Наименование:{2}{1}Описание:{3}", itemDrive.Provider, @"<br/>", itemDrive.Name, itemDrive.Memo);
+                model.CloudDriveInfo = string.Format("Наименование:{2}{1}Провайдер:{0}{1}Описание:{3}", itemDrive.Provider, @"<br/>", itemDrive.Name, itemDrive.Memo);
             }
             else
             {
@@ -83,6 +83,10 @@ namespace MvcSqlServerWebBackup.Models
             keys.Add("ValidateCloudDriveId", "Проверка идентификатора соединения с хранилищем");
             keys.Add("ValidateCloudDriveCanConnect", "Проверка соединения с хранилищем");
             keys.Add("ValidateConnectionCanConnect", "Проверка соединения с сервером баз данных");
+            keys.Add("CreateBackupDone", "Создание резервной копии");
+            keys.Add("CreateZipDone", "Сжатие резервной копии");
+            keys.Add("TranferToCloudDriveId", "Загрузка в облочное хранилище");
+            
             if (keys.ContainsKey(key))
                 return keys[key];
             else

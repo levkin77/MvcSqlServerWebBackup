@@ -170,7 +170,52 @@ namespace MvcSqlServerWebBackup.Controllers
 
             Dictionary<string, Tuple<bool,string>> v = new Dictionary<string, Tuple<bool, string>>();
             v.Add("ValidateConnectionId", new Tuple<bool, string>(true, "Выполнено!"));
-            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+
+            if (!string.IsNullOrEmpty(item.CloudDriveId))
+            {
+                CloudDrive drive = DbContext.Current.GetCloudDrives().FirstOrDefault(s=>s.Id==item.CloudDriveId);
+                if (drive != null)
+                {
+                    if (drive.Provider == CloudDrive.PROVIDER_MEGA)
+                    {
+                        string msg = string.Empty;
+                        if (MegaCloud.TestCloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                        }
+                        else
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_BACKUPDEVICE)
+                    {
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_FILESYSTEM)
+                    {
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "В разработке!"));
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_GOOGLEDRIVE)
+                    {
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "В разработке!"));
+                    }
+                    else
+                    {
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, "Не поддерживаемый провайдер!"));
+                    }
+                }
+                else
+                {
+                    v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, "Не найдено место хранения!"));
+                }
+            }
+            else
+            {
+                v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, "Не указано место хранения!"));
+            }
+            
+            
             v.Add("ValidateCloudDriveCanConnect", new Tuple<bool, string>(true, "Выполнено!"));
             v.Add("ValidateConnectionCanConnect", new Tuple<bool, string>(true, "Выполнено!"));
 
@@ -217,88 +262,80 @@ namespace MvcSqlServerWebBackup.Controllers
                 var drive = DbContext.Current.GetCloudDrives().FirstOrDefault(s => s.Id == item.CloudDriveId);
                 if (drive != null)
                 {
-                    v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
                     if (drive.Provider == CloudDrive.PROVIDER_FILESYSTEM)
                     {
-                        //Regex.Unescape(drive.Location)
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+
                         // проверка доступности файловой системы
                         if (!Directory.Exists(drive.Location))
                         {
                             Directory.CreateDirectory(drive.Location);
                         }
                         v.Add("ValidateCloudDriveCanConnect", new Tuple<bool, string>(true, "Выполнено!"));
-
-                        
-
-                        var task = DbContext.Current.GetBackupTasks().FirstOrDefault(s => s.Id == id);
-                        string dbName = task.DbName;
-                        if (!dbName.StartsWith("["))
+                        BackupToFileSystem(id, item, drive, cnnString, v);
+                        if (v.Keys.Contains("CreateBackupDone"))
                         {
-                            dbName = string.Format("[{0}]", dbName);
-                        }
-                        string dbNameClean = dbName.Replace("[", string.Empty).Replace("]", string.Empty);
-                        DateTime dt = DateTime.Now;
-                        string dbNameWithDate = dbNameClean + "_" + dt.ToString("yyyyMMddhhmmss");
-                        string fileNameBak = (item.AddCurrentDateTime ? dbNameWithDate : dbNameClean) + ".bak";
-                        var location = System.IO.Path.Combine(drive.Location, fileNameBak);
-
-
-                        try
-                        {
-                            using (SqlConnection cnnConnection = new SqlConnection(cnnString))
+                            if (v["CreateBackupDone"].Item1)
                             {
-                                using (SqlCommand cmd = cnnConnection.CreateCommand())
+                                item.LastRun = DateTime.Now;
+                                item.LastStatus = v["CreateBackupDone"].Item2;
+                                DbContext.Current.Save(item);
+                            }
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_BACKUPDEVICE)
+                    {
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+
+                        // проверка доступности устройства резервного копирования
+                        v.Add("ValidateCloudDriveCanConnect", new Tuple<bool, string>(true, "Выполнено!"));
+                        BackupToSqlDevice(id, item, drive, cnnString, v);
+                        if (v.Keys.Contains("CreateBackupDone"))
+                        {
+                            if (v["CreateBackupDone"].Item1)
+                            {
+                                item.LastRun=DateTime.Now;
+                                item.LastStatus = v["CreateBackupDone"].Item2;
+                                DbContext.Current.Save(item);
+                            }
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_MEGA)
+                    {
+                        // проверка доступности устройства резервного копирования
+                        string msg = string.Empty;
+                        if (MegaCloud.TestCloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                            string fileToTransfer = string.Empty;
+                            BackupToDefaultFileSystem(id, item, cnnString, v, out fileToTransfer);
+                            if (v.Keys.Contains("CreateBackupDone"))
+                            {
+                                if (v["CreateBackupDone"].Item1)
                                 {
+                                    item.LastRun = DateTime.Now;
+                                    item.LastStatus = v["CreateBackupDone"].Item2;
+                                    DbContext.Current.Save(item);
 
-                                    string cmdText= string.Format(@"BACKUP DATABASE {0} TO  DISK = N'{1}' WITH #REPLACE_COPYONLY NOFORMAT, NOINIT,  NAME = N'{2}-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, #COMPRESSION STATS = 10",
-
-                                        // Сжатие
-                                        //BACKUP DATABASE[smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT, NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = 10
-                                        //BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, NO_COMPRESSION,  STATS = 10
-
-                                        // CopyOnly
-                                        //BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH  COPY_ONLY, NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
-                                        dbName, location, dbNameClean);
-                                    if (item.CopyOnly)
+                                    if (MegaCloud.UploadToCloud(drive, fileToTransfer, out msg))
                                     {
-                                        cmdText = cmdText.Replace("#REPLACE_COPYONLY", "COPY_ONLY,");
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! Файл доступен по ссылке:" + msg ));
                                     }
                                     else
                                     {
-                                        cmdText = cmdText.Replace("#REPLACE_COPYONLY", "");
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(false, msg));
                                     }
-                                    switch (item.Compression)
-                                    {
-                                        case 1:
-                                            cmdText = cmdText.Replace("#COMPRESSION", "COMPRESSION,");
-                                            break;
-                                        case 2:
-                                            cmdText = cmdText.Replace("#COMPRESSION", "NO_COMPRESSION,");
-                                            break;
-                                        default:
-                                            cmdText = cmdText.Replace("#COMPRESSION", "");
-                                            break;
-                                    }
-                                    cmd.CommandText = cmdText;
-                                    cmd.Connection.Open();
-                                    cmd.ExecuteNonQuery();
-                                    cmd.Connection.Close();
-                                    v.Add("CreateBackupDone", new Tuple<bool, string>(true, "Выполнено!"));
                                 }
                             }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            v.Add("CreateBackupDone", new Tuple<bool, string>(false, "Не выполнено!"));
-                            v.Add("CreateBackupDoneError", new Tuple<bool, string>(false, e.Message));
-                            Console.WriteLine(e);
-                            
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
                         }
                         
-                        /*
-                     BACKUP DATABASE [smartstore] TO  DISK = N'E:\SQLDATABASE\BACKUP\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10    
-                     */
+                        
                     }
+                    
                 }
                 else
                 {
@@ -311,7 +348,266 @@ namespace MvcSqlServerWebBackup.Controllers
 
             return View(allModels);
         }
-        //
-        //
+
+        private void BackupToFileSystem(string id, BackupTask item, CloudDrive drive, string cnnString, Dictionary<string, Tuple<bool, string>> v)
+        {
+            var task = DbContext.Current.GetBackupTasks().FirstOrDefault(s => s.Id == id);
+            string dbName = task.DbName;
+            if (!dbName.StartsWith("["))
+            {
+                dbName = string.Format("[{0}]", dbName);
+            }
+            string dbNameClean = dbName.Replace("[", string.Empty).Replace("]", string.Empty);
+            DateTime dt = DateTime.Now;
+            string dbNameWithDate = dbNameClean + "_" + dt.ToString("yyyyMMddhhmmss");
+            string fileNameBak = (item.AddCurrentDateTime ? dbNameWithDate : dbNameClean) + ".bak";
+            var location = System.IO.Path.Combine(drive.Location, fileNameBak);
+
+
+            try
+            {
+                using (SqlConnection cnnConnection = new SqlConnection(cnnString))
+                {
+                    using (SqlCommand cmd = cnnConnection.CreateCommand())
+                    {
+                        string cmdText =
+                            string.Format(
+                                @"BACKUP DATABASE {0} TO  DISK = N'{1}' WITH #REPLACE_COPYONLY NOFORMAT, NOINIT,  NAME = N'{2}-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, #COMPRESSION STATS = 10",
+
+// Сжатие
+//BACKUP DATABASE[smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT, NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = 10
+//BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, NO_COMPRESSION,  STATS = 10
+
+// CopyOnly
+//BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH  COPY_ONLY, NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+
+//BACKUP DATABASE [smartstore] TO  [TEST] WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+
+                                dbName, location, dbNameClean);
+                        if (item.CopyOnly)
+                        {
+                            cmdText = cmdText.Replace("#REPLACE_COPYONLY", "COPY_ONLY,");
+                        }
+                        else
+                        {
+                            cmdText = cmdText.Replace("#REPLACE_COPYONLY", "");
+                        }
+                        switch (item.Compression)
+                        {
+                            case 1:
+                                cmdText = cmdText.Replace("#COMPRESSION", "COMPRESSION,");
+                                break;
+                            case 2:
+                                cmdText = cmdText.Replace("#COMPRESSION", "NO_COMPRESSION,");
+                                break;
+                            default:
+                                cmdText = cmdText.Replace("#COMPRESSION", "");
+                                break;
+                        }
+                        cmd.CommandText = cmdText;
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                        v.Add("CreateBackupDone", new Tuple<bool, string>(true, "Выполнено!"));
+                        if (item.UseZip)
+                        {
+                            try
+                            {
+                                var dirLocation = System.IO.Path.GetDirectoryName(location);
+                                var zipFileName = System.IO.Path.GetFileNameWithoutExtension(location) + ".zip";
+                                var fullZipName = System.IO.Path.Combine(dirLocation, zipFileName);
+                                ZipData.CreateZip(location, fullZipName);
+                                v.Add("CreateZipDone", new Tuple<bool, string>(true, "Выполнено!"));
+                            }
+                            catch (Exception eZip)
+                            {
+                                v.Add("CreateZipDone", new Tuple<bool, string>(false, eZip.Message));
+                            }
+                            
+                            
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                v.Add("CreateBackupDone", new Tuple<bool, string>(false, "Не выполнено!"));
+                v.Add("CreateBackupDoneError", new Tuple<bool, string>(false, e.Message));
+                Console.WriteLine(e);
+            }
+
+            /*
+                     BACKUP DATABASE [smartstore] TO  DISK = N'E:\SQLDATABASE\BACKUP\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10    
+                     */
+        }
+
+        private void BackupToSqlDevice(string id, BackupTask item, CloudDrive drive, string cnnString, Dictionary<string, Tuple<bool, string>> v)
+        {
+            var task = DbContext.Current.GetBackupTasks().FirstOrDefault(s => s.Id == id);
+            string dbName = task.DbName;
+            if (!dbName.StartsWith("["))
+            {
+                dbName = string.Format("[{0}]", dbName);
+            }
+            string dbNameClean = dbName.Replace("[", string.Empty).Replace("]", string.Empty);
+            var location = drive.Location;
+
+            if (!location.StartsWith("["))
+            {
+                location = string.Format("[{0}]", location);
+            }
+            try
+            {
+                using (SqlConnection cnnConnection = new SqlConnection(cnnString))
+                {
+                    using (SqlCommand cmd = cnnConnection.CreateCommand())
+                    {
+                        string cmdText =
+                            string.Format(
+                                @"BACKUP DATABASE {0} TO  {1} WITH #REPLACE_COPYONLY NOFORMAT, NOINIT,  NAME = N'{2}-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, #COMPRESSION STATS = 10",
+
+                                // Сжатие
+                                //BACKUP DATABASE[smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT, NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = 10
+                                //BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, NO_COMPRESSION,  STATS = 10
+
+                                // CopyOnly
+                                //BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH  COPY_ONLY, NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+
+                                //BACKUP DATABASE [smartstore] TO  [TEST] WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+
+                                dbName, location, dbNameClean);
+                        if (item.CopyOnly)
+                        {
+                            cmdText = cmdText.Replace("#REPLACE_COPYONLY", "COPY_ONLY,");
+                        }
+                        else
+                        {
+                            cmdText = cmdText.Replace("#REPLACE_COPYONLY", "");
+                        }
+                        switch (item.Compression)
+                        {
+                            case 1:
+                                cmdText = cmdText.Replace("#COMPRESSION", "COMPRESSION,");
+                                break;
+                            case 2:
+                                cmdText = cmdText.Replace("#COMPRESSION", "NO_COMPRESSION,");
+                                break;
+                            default:
+                                cmdText = cmdText.Replace("#COMPRESSION", "");
+                                break;
+                        }
+                        cmd.CommandText = cmdText;
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                        v.Add("CreateBackupDone", new Tuple<bool, string>(true, "Выполнено!"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                v.Add("CreateBackupDone", new Tuple<bool, string>(false, "Не выполнено!"));
+                v.Add("CreateBackupDoneError", new Tuple<bool, string>(false, e.Message));
+            }
+
+            /*
+                     BACKUP DATABASE [smartstore] TO  DISK = N'E:\SQLDATABASE\BACKUP\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10    
+                     */
+        }
+
+        private void BackupToDefaultFileSystem(string id, BackupTask item, string cnnString, 
+            Dictionary<string, Tuple<bool, string>> v, 
+            out string createdBakupFile,
+            string defaulLocation = @"C:\Backup\")
+        {
+            var task = DbContext.Current.GetBackupTasks().FirstOrDefault(s => s.Id == id);
+            string dbName = task.DbName;
+            if (!dbName.StartsWith("["))
+            {
+                dbName = string.Format("[{0}]", dbName);
+            }
+            string dbNameClean = dbName.Replace("[", string.Empty).Replace("]", string.Empty);
+            DateTime dt = DateTime.Now;
+            string dbNameWithDate = dbNameClean + "_" + dt.ToString("yyyyMMddhhmmss");
+            string fileNameBak = (item.AddCurrentDateTime ? dbNameWithDate : dbNameClean) + ".bak";
+            var location = System.IO.Path.Combine(defaulLocation, fileNameBak);
+            createdBakupFile = location;
+            try
+            {
+                using (SqlConnection cnnConnection = new SqlConnection(cnnString))
+                {
+                    using (SqlCommand cmd = cnnConnection.CreateCommand())
+                    {
+                        string cmdText =
+                            string.Format(
+                                @"BACKUP DATABASE {0} TO  DISK = N'{1}' WITH #REPLACE_COPYONLY NOFORMAT, NOINIT,  NAME = N'{2}-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, #COMPRESSION STATS = 10",
+
+                                // Сжатие
+                                //BACKUP DATABASE[smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT, NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = 10
+                                //BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, NO_COMPRESSION,  STATS = 10
+
+                                // CopyOnly
+                                //BACKUP DATABASE [smartstore] TO  DISK = N'C:\Backup\smartstore.bak' WITH  COPY_ONLY, NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+
+                                //BACKUP DATABASE [smartstore] TO  [TEST] WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10
+
+                                dbName, location, dbNameClean);
+                        if (item.CopyOnly)
+                        {
+                            cmdText = cmdText.Replace("#REPLACE_COPYONLY", "COPY_ONLY,");
+                        }
+                        else
+                        {
+                            cmdText = cmdText.Replace("#REPLACE_COPYONLY", "");
+                        }
+                        switch (item.Compression)
+                        {
+                            case 1:
+                                cmdText = cmdText.Replace("#COMPRESSION", "COMPRESSION,");
+                                break;
+                            case 2:
+                                cmdText = cmdText.Replace("#COMPRESSION", "NO_COMPRESSION,");
+                                break;
+                            default:
+                                cmdText = cmdText.Replace("#COMPRESSION", "");
+                                break;
+                        }
+                        cmd.CommandText = cmdText;
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                        v.Add("CreateBackupDone", new Tuple<bool, string>(true, "Выполнено!"));
+                        if (item.UseZip)
+                        {
+                            try
+                            {
+                                var dirLocation = System.IO.Path.GetDirectoryName(location);
+                                var zipFileName = System.IO.Path.GetFileNameWithoutExtension(location) + ".zip";
+                                var fullZipName = System.IO.Path.Combine(dirLocation, zipFileName);
+                                ZipData.CreateZip(location, fullZipName);
+                                createdBakupFile = fullZipName;
+                                v.Add("CreateZipDone", new Tuple<bool, string>(true, "Выполнено!"));
+                            }
+                            catch (Exception eZip)
+                            {
+                                v.Add("CreateZipDone", new Tuple<bool, string>(false, eZip.Message));
+                            }
+
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                v.Add("CreateBackupDone", new Tuple<bool, string>(false, "Не выполнено!"));
+                v.Add("CreateBackupDoneError", new Tuple<bool, string>(false, e.Message));
+                Console.WriteLine(e);
+            }
+
+            /*
+                     BACKUP DATABASE [smartstore] TO  DISK = N'E:\SQLDATABASE\BACKUP\smartstore.bak' WITH NOFORMAT, NOINIT,  NAME = N'smartstore-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10    
+                     */
+        }
     }
 }

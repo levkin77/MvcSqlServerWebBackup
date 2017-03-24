@@ -5,41 +5,21 @@ using System.Xml.Serialization;
 
 namespace MvcSqlServerWebBackup
 {
-    public class CloudDrive : CoreObject
+    public class AppConfig 
     {
-        public const string PROVIDER_GOOGLEDRIVE = "GoogleDrive";
-        public const string PROVIDER_MEGA = "Mega";
-        public const string PROVIDER_FILESYSTEM = "FileSystem";
-        public const string PROVIDER_BACKUPDEVICE = "SQLBACKUPDEVICE";
         #region Свойства
         /// <summary>
-        /// Типы провайдеров: MEGA, Mail.ru, Yandex, GoogleDrive, SkyDrive
+        /// Место создания резервных копий по умолчанию
         /// </summary>
-        public string Provider { get; set; }
+        public string BackupLocation { get; set; }
         /// <summary>
-        /// Текущее расположение
+        /// Пароль zip архивов
         /// </summary>
-        public string Location { get; set; }
-        /// <summary>
-        /// Имя пользователя
-        /// </summary>
-        public string Uid { get; set; }
-        /// <summary>
-        /// Пароль
-        /// </summary>
-        public string Password { get; set; }
-        public bool CanConnect { get; set; } 
+        public string ZipPassword { get; set; }
         #endregion
 
-        public static CloudDrive New()
-        {
-            CloudDrive v = new CloudDrive();
-            v.NewId();
-            return v;
-        }
-
         private static object locker = new object();
-        public static bool SaveCollection(string location, List<CloudDrive> values)
+        public static bool Save(string location, AppConfig values)
         {
             try
             {
@@ -63,14 +43,14 @@ namespace MvcSqlServerWebBackup
         /// </summary>
         /// <param name="location">Расположение файла</param>
         /// <returns></returns>
-        public static List<CloudDrive> LoadCollection(string location)
+        public static AppConfig Load(string location)
         {
-            List<CloudDrive> values = new List<CloudDrive>();
+            AppConfig values = new AppConfig();
             try
             {
                 XmlSerializer x = new XmlSerializer(typeof(List<CloudDrive>));
                 StreamReader reader = new StreamReader(location);
-                values = (List<CloudDrive>)x.Deserialize(reader);
+                values = (AppConfig)x.Deserialize(reader);
 
             }
             catch

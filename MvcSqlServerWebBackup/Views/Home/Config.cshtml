@@ -1,0 +1,36 @@
+﻿@model MvcSqlServerWebBackup.AppConfig
+@{
+    ViewBag.Title = "Настройки";
+}
+<h2>@ViewBag.Title.</h2>
+<hr />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true)
+        <div class="form-group">
+            @Html.LabelFor(model => model.BackupLocation, "Расположение резервных копий по умолчанию", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BackupLocation, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BackupLocation)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ZipPassword, "Пароль zip архивов", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.PasswordFor(model => model.ZipPassword, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ZipPassword)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

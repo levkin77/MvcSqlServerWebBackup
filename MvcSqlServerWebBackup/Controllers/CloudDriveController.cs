@@ -2,6 +2,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using MvcSqlServerWebBackup.Models;
+using System;
 
 namespace MvcSqlServerWebBackup.Controllers
 {
@@ -25,7 +26,7 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetCloudDrives().Find(s => s.Id == id);
+            var item = id.Equals(Guid.Empty.ToString()) ? new CloudDrive() : DbContext.Current.GetCloudDrives().Find(s => s.Id == id);
             if (item == null)
             {
                 return HttpNotFound();
@@ -34,23 +35,27 @@ namespace MvcSqlServerWebBackup.Controllers
                 Name = item.Name,
                 Memo = item.Memo,
                 Provider = item.Provider, 
-                Location = item.Location
+                Location = item.Location,
+                Uid = item.Uid,
+                Password = item.Password
             });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location")] ModelCloudDriveViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location, Uid, Password")] ModelCloudDriveViewEdit item)
         {
             if (ModelState.IsValid)
             {
-                
-                var v = DbContext.Current.GetCloudDrives().Find(s => s.Id == item.Id);
+
+                var v = item.Id.Equals(Guid.Empty.ToString()) ? null : DbContext.Current.GetCloudDrives().Find(s => s.Id == item.Id);
                 if (v != null)
                 {
                     v.Name = item.Name;
                     v.Memo = item.Memo;
                     v.Provider = item.Provider;
                     v.Location = item.Location;
+                    v.Uid = item.Uid;
+                    v.Password = item.Password;
                 }
                 else
                 {
@@ -60,6 +65,10 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Memo = item.Memo;
                     v.Provider = item.Provider;
                     v.Location = item.Location;
+                    v.Uid = item.Uid;
+                    v.Password = item.Password;
+                    if (item.Id.Equals(Guid.Empty.ToString()))
+                        v.NewId();
                 }
                 DbContext.Current.Save(v);
                 return RedirectToAction("Index");
@@ -78,9 +87,13 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new ModelCloudDriveViewEdit() { Id = item.Id, Name = item.Name, Memo = item.Memo,
+            return View(new ModelCloudDriveViewEdit() { Id = item.Id,
+                Name = item.Name,
+                Memo = item.Memo,
                 Provider = item.Provider,
-                Location = item.Location
+                Location = item.Location,
+                Uid = item.Uid,
+                Password = item.Password
         });
         }
 

@@ -49,6 +49,12 @@
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="MegaApiClient, Version=1.3.1.269, Culture=neutral, PublicKeyToken=0480d311efbeb4e2, processorArchitecture=MSIL">
+      <HintPath>..\packages\MegaApiClient.1.3.1\lib\net45\MegaApiClient.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
@@ -116,11 +122,14 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Code\AppConfig.cs" />
     <Compile Include="Code\BackupTask.cs" />
     <Compile Include="Code\CloudDrive.cs" />
     <Compile Include="Code\CoreObject.cs" />
     <Compile Include="Code\Db.cs" />
+    <Compile Include="Code\MegaCloud.cs" />
     <Compile Include="Code\ServerConnection.cs" />
+    <Compile Include="Code\ZipData.cs" />
     <Compile Include="Controllers\BackupTaskController.cs" />
     <Compile Include="Controllers\CloudDriveController.cs" />
     <Compile Include="Controllers\CnnController.cs" />
@@ -186,7 +195,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\ListTask.cshtml" />
+    <Content Include="Views\Home\Config.cshtml" />
     <Content Include="Views\Cnn\Edit.cshtml" />
     <Content Include="Views\Cnn\Index.cshtml" />
     <Content Include="Views\Cnn\Details.cshtml" />

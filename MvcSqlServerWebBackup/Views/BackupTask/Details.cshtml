@@ -39,6 +39,12 @@
                     @Html.DisplayFor(model => model.Name)
                 </dd>
                 <dt>
+                    @Html.LabelFor(model => model.DbName, "База данных")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.DbName)
+                </dd>
+                <dt>
                     @Html.LabelFor(model => model.ConnectionInfo, "Информация о соединении")
                 </dt>
                 <dd>

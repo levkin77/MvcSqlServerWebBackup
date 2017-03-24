@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using MvcSqlServerWebBackup.Models;
@@ -25,7 +26,8 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var item = DbContext.Current.GetServerConnections().Find(s => s.Id == id);
+            
+            var item = id.Equals(Guid.Empty.ToString()) ? new ServerConnection() : DbContext.Current.GetServerConnections().Find(s => s.Id == id);
             if (item == null)
             {
                 return HttpNotFound();
@@ -48,7 +50,7 @@ namespace MvcSqlServerWebBackup.Controllers
             {
                 //db.Entry(movie).State = EntityState.Modified;
                 //db.SaveChanges();
-                var v = DbContext.Current.GetServerConnections().Find(s => s.Id == item.Id);
+                var v = item.Id.Equals(Guid.Empty.ToString()) ? null : DbContext.Current.GetServerConnections().Find(s => s.Id == item.Id);
                 if (v != null)
                 {
                     v.Name = item.Name;
@@ -70,7 +72,8 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Password = item.Password;
                     v.Uid = item.Uid;
                     v.IntegratedSecurity = item.IntegratedSecurity;
-
+                    if (item.Id.Equals(Guid.Empty.ToString()))
+                        v.NewId();
                 }
                 DbContext.Current.Save(v);
                 return RedirectToAction("Index");

@@ -21,6 +21,14 @@
         /// Текущее расположение
         /// </summary>
         public string Location { get; set; }
+        /// <summary>
+        /// Имя пользователя
+        /// </summary>
+        public string Uid { get; set; }
+        /// <summary>
+        /// Пароль
+        /// </summary>
+        public string Password { get; set; }
     }
 
 }

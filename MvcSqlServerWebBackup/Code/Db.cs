@@ -138,6 +138,8 @@ namespace MvcSqlServerWebBackup
 
         #region BackupTask
         private List<BackupTask> _collBackupTasks;
+        private AppConfig _config;
+
         public void Delete(BackupTask value)
         {
             if (_collBackupTasks != null)
@@ -211,7 +213,20 @@ namespace MvcSqlServerWebBackup
                 var data = BackupTask.LoadCollection(sPath);
                 _collBackupTasks = data;
             }
+            sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/SiteSettings.xml");
+            if (System.IO.File.Exists(sPath))
+            {
+                var data = AppConfig.Load(sPath);
+                _config = data;
+            }
         }
+
+        public AppConfig Config
+        {
+            get { return _config; }
+            set { _config = value; }
+        }
+
 
         public void SaveServerConnections()
         {
@@ -227,6 +242,12 @@ namespace MvcSqlServerWebBackup
         {
             var sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/BackupTasks.xml");
             BackupTask.SaveCollection(sPath, _collBackupTasks);
+        }
+
+        public void SaveAppConfig()
+        {
+            var sPath = System.Web.Hosting.HostingEnvironment.MapPath("/App_Data/SiteSettings.xml");
+            AppConfig.Save(sPath, _config);
         }
     }
 }

@@ -21,26 +21,28 @@ namespace MvcSqlServerWebBackup.Controllers
             return View();
         }
 
-        
         /// <summary>
-        /// Настройка провайдеров
+        /// Настройка
         /// </summary>
         /// <returns></returns>
-        public ActionResult ListDrive()
-        {
-            ViewBag.Message = "Настройка провайдеров.";
-
-            return View();
-        }
-        /// <summary>
-        /// Настройка заданий
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult ListTask()
+        public ActionResult Config()
         {
             ViewBag.Message = "Настройка заданий.";
 
-            return View();
+            return View(DbContext.Current.Config);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Config([Bind(Include = "BackupLocation, ZipPassword")] AppConfig item)
+        {
+            if (ModelState.IsValid)
+            {
+                DbContext.Current.Config.BackupLocation = item.BackupLocation;
+                DbContext.Current.Config.ZipPassword = item.ZipPassword;
+                DbContext.Current.SaveAppConfig();
+                return RedirectToAction("Index");
+            }
+            return View(item);
         }
     }
 }

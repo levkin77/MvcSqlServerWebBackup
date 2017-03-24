@@ -28,7 +28,9 @@
                 @Html.DropDownListFor(m => m.Provider, new List<SelectListItem>{
                new SelectListItem(){Text = "GoogleDrive", Value = "GoogleDrive", Selected = @Model.Provider== "GoogleDrive" },
                new SelectListItem(){Text = "Mega", Value = "Mega", Selected = @Model.Provider== "Mega" },
-               new SelectListItem(){Text = "Файловая система", Value = "FileSystem", Selected = @Model.Provider== "FileSystem" }
+               new SelectListItem(){Text = "Файловая система", Value = "FileSystem", Selected = @Model.Provider== "FileSystem" },
+               new SelectListItem(){Text = "Серверное устройство", Value = "SQLBACKUPDEVICE", Selected = @Model.Provider== "SQLBACKUPDEVICE" }
+               
            },
                new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Provider)
@@ -39,6 +41,20 @@
             <div class="col-md-10">
                 @Html.EditorFor(m => m.Location, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(m => m.Location)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Uid, "Пользователь", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Uid, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Uid)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Password, "Пароль", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control" } )
+                @Html.ValidationMessageFor(model => model.Password)
             </div>
         </div>
         <div class="form-group">

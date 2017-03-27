@@ -29,6 +29,11 @@
         /// Пароль
         /// </summary>
         public string Password { get; set; }
+        /// <summary>
+        /// Токен
+        /// </summary>
+        public string Token { get; set; }
+        
     }
 
 }

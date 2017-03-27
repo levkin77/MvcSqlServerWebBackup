@@ -37,12 +37,26 @@ namespace MvcSqlServerWebBackup.Controllers
                 Provider = item.Provider, 
                 Location = item.Location,
                 Uid = item.Uid,
-                Password = item.Password
+                Password = item.Password,
+                Token = item.Token
             });
+        }
+        [HttpGet]
+        public ActionResult Create(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = new ModelCloudDriveViewEdit {Id = Guid.Empty.ToString()};
+            model.Provider = id;
+
+            return View("Edit", model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location, Uid, Password")] ModelCloudDriveViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location, Uid, Password, Token")] ModelCloudDriveViewEdit item)
         {
             if (ModelState.IsValid)
             {
@@ -56,6 +70,7 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Location = item.Location;
                     v.Uid = item.Uid;
                     v.Password = item.Password;
+                    v.Token = item.Token;
                 }
                 else
                 {
@@ -67,6 +82,7 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Location = item.Location;
                     v.Uid = item.Uid;
                     v.Password = item.Password;
+                    v.Token = item.Token;
                     if (item.Id.Equals(Guid.Empty.ToString()))
                         v.NewId();
                 }
@@ -93,7 +109,8 @@ namespace MvcSqlServerWebBackup.Controllers
                 Provider = item.Provider,
                 Location = item.Location,
                 Uid = item.Uid,
-                Password = item.Password
+                Password = item.Password,
+                Token = item.Token
         });
         }
 

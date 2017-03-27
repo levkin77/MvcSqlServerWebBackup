@@ -11,6 +11,11 @@ namespace MvcSqlServerWebBackup
         public const string PROVIDER_MEGA = "Mega";
         public const string PROVIDER_FILESYSTEM = "FileSystem";
         public const string PROVIDER_BACKUPDEVICE = "SQLBACKUPDEVICE";
+        public const string PROVIDER_MAILRU = "MAILRU";
+        public const string PROVIDER_PCLOUD = "PCLOUD";
+        public const string PROVIDER_B2CLOUD = "B2CLOUD";
+        public const string PROVIDER_YANDEXDISK = "YANDEXDISK";
+
         #region Свойства
         /// <summary>
         /// Типы провайдеров: MEGA, Mail.ru, Yandex, GoogleDrive, SkyDrive
@@ -28,6 +33,12 @@ namespace MvcSqlServerWebBackup
         /// Пароль
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Токен ответа
+        /// </summary>
+        public string Token { get; set; }
+
         public bool CanConnect { get; set; } 
         #endregion
 

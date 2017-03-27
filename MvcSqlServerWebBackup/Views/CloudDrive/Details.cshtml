@@ -46,6 +46,26 @@
                 <dd>
                     @Html.DisplayFor(model => model.Location)
                 </dd>
+                
+                <dt>
+                    @Html.LabelFor(model => model.Uid, "Пользователь")
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Uid)
+                </dd>
+                <dt>
+                    @Html.LabelFor(model => model.Password, "Пароль")
+                </dt>
+                <dd>
+                    @if (string.IsNullOrEmpty(Model.Password) || string.IsNullOrWhiteSpace(Model.Password))
+            {
+                        @Html.Label("Не указан")
+                    }
+                    else
+                    {
+                        @Html.Label("Указан")
+                    }
+                </dd>
                 <dt>
                     @Html.LabelFor(model => model.Memo, "Описание")
                 </dt>

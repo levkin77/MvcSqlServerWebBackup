@@ -1,8 +1,22 @@
 ﻿@model MvcSqlServerWebBackup.Models.ModelCloudDriveViewEdit
 @{
     ViewBag.Title = "Редактирование облачного диска";
-}
+    //style="display: none;"
+    var disableEditProvide = !string.IsNullOrEmpty(Model.Id);
 
+    var locationIsHide = (Model.Provider != CloudDrive.PROVIDER_FILESYSTEM)
+        & (Model.Provider!=CloudDrive.PROVIDER_B2CLOUD);
+}
+@functions {
+    object getHtmlAttributes(bool ReadOnly, string CssClass)
+    {
+        if (ReadOnly)
+        {
+            return new { @class = CssClass, @disabled = "true" };
+        }
+        return new { @class = CssClass };
+    }
+}
 <h2>Редактирование облачного диска</h2>
 @using (Html.BeginForm())
 {
@@ -26,23 +40,33 @@
             @Html.LabelFor(m => m.Provider, "Провайдер", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownListFor(m => m.Provider, new List<SelectListItem>{
-               new SelectListItem(){Text = "GoogleDrive", Value = "GoogleDrive", Selected = @Model.Provider== "GoogleDrive" },
-               new SelectListItem(){Text = "Mega", Value = "Mega", Selected = @Model.Provider== "Mega" },
-               new SelectListItem(){Text = "Файловая система", Value = "FileSystem", Selected = @Model.Provider== "FileSystem" },
-               new SelectListItem(){Text = "Серверное устройство", Value = "SQLBACKUPDEVICE", Selected = @Model.Provider== "SQLBACKUPDEVICE" }
-               
+               new SelectListItem(){Text = "Файловая система", Value = CloudDrive.PROVIDER_FILESYSTEM, Selected = @Model.Provider== CloudDrive.PROVIDER_FILESYSTEM },
+               new SelectListItem(){Text = "Серверное устройство", Value = CloudDrive.PROVIDER_BACKUPDEVICE, Selected = @Model.Provider== CloudDrive.PROVIDER_BACKUPDEVICE },
+               new SelectListItem(){Text = "Mega", Value = CloudDrive.PROVIDER_MEGA, Selected = @Model.Provider== CloudDrive.PROVIDER_MEGA },
+               new SelectListItem(){Text = "MailRu", Value = CloudDrive.PROVIDER_MAILRU, Selected = @Model.Provider== CloudDrive.PROVIDER_MAILRU },
+               new SelectListItem(){Text = "pCloud", Value = CloudDrive.PROVIDER_PCLOUD, Selected = @Model.Provider== CloudDrive.PROVIDER_PCLOUD },
+               new SelectListItem(){Text = "B2 Cloud Backblaze", Value = CloudDrive.PROVIDER_B2CLOUD, Selected = @Model.Provider== CloudDrive.PROVIDER_B2CLOUD },
+               new SelectListItem(){Text = "YandexDisc", Value = CloudDrive.PROVIDER_YANDEXDISK, Selected = @Model.Provider== CloudDrive.PROVIDER_YANDEXDISK },
+
+               new SelectListItem(){Text = "GoogleDrive", Value = CloudDrive.PROVIDER_GOOGLEDRIVE, Selected = @Model.Provider== CloudDrive.PROVIDER_GOOGLEDRIVE }
            },
-               new { @class = "form-control" })
+           @getHtmlAttributes(false, "form-control"))
+                @*//@Html.TextBox("name", "value", @getHtmlAttributes(Model.ReadOnly, "test"))*@
+
                 @Html.ValidationMessageFor(m => m.Provider)
             </div>
         </div>
-        <div class="form-group">
-                @Html.LabelFor(m => m.Location, "Расположение", new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(m => m.Location, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(m => m.Location)
+        @if (!locationIsHide)
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.Location, "Расположение", new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.Location,
+                        new {htmlAttributes = new {@class = "form-control"}})
+                    @Html.ValidationMessageFor(m => m.Location)
+                </div>
             </div>
-        </div>
+        }
         <div class="form-group">
             @Html.LabelFor(model => model.Uid, "Пользователь", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -55,6 +79,13 @@
             <div class="col-md-10">
                 @Html.PasswordFor(model => model.Password, new { @class = "form-control" } )
                 @Html.ValidationMessageFor(model => model.Password)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Token, "Токен", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Token, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Token)
             </div>
         </div>
         <div class="form-group">

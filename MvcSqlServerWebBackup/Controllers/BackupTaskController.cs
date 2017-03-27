@@ -179,7 +179,7 @@ namespace MvcSqlServerWebBackup.Controllers
                     if (drive.Provider == CloudDrive.PROVIDER_MEGA)
                     {
                         string msg = string.Empty;
-                        if (MegaCloud.TestCloud(drive, out msg))
+                        if (CloudDataApi.TestMegaCloud(drive, out msg))
                         {
                             v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
                         }
@@ -304,7 +304,7 @@ namespace MvcSqlServerWebBackup.Controllers
                     {
                         // проверка доступности устройства резервного копирования
                         string msg = string.Empty;
-                        if (MegaCloud.TestCloud(drive, out msg))
+                        if (CloudDataApi.TestMegaCloud(drive, out msg))
                         {
                             v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
                             string fileToTransfer = string.Empty;
@@ -317,9 +317,18 @@ namespace MvcSqlServerWebBackup.Controllers
                                     item.LastStatus = v["CreateBackupDone"].Item2;
                                     DbContext.Current.Save(item);
 
-                                    if (MegaCloud.UploadToCloud(drive, fileToTransfer, out msg))
+                                    if (CloudDataApi.UploadToMegaCloud(drive, fileToTransfer, out msg))
                                     {
                                         v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! Файл доступен по ссылке:" + msg ));
+                                        //удаляем исходный файл
+                                        try
+                                        {
+                                            System.IO.File.Delete(fileToTransfer);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            
+                                        }
                                     }
                                     else
                                     {
@@ -335,7 +344,178 @@ namespace MvcSqlServerWebBackup.Controllers
                         
                         
                     }
-                    
+                    else if (drive.Provider == CloudDrive.PROVIDER_MAILRU)
+                    {
+                        // проверка доступности устройства резервного копирования
+                        string msg = string.Empty;
+                        if (CloudDataApi.TestMailRuCloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                            string fileToTransfer = string.Empty;
+                            BackupToDefaultFileSystem(id, item, cnnString, v, out fileToTransfer);
+                            if (v.Keys.Contains("CreateBackupDone"))
+                            {
+                                if (v["CreateBackupDone"].Item1)
+                                {
+                                    item.LastRun = DateTime.Now;
+                                    item.LastStatus = v["CreateBackupDone"].Item2;
+                                    DbContext.Current.Save(item);
+
+                                    if (CloudDataApi.UploadToMailRuCloud(drive, fileToTransfer, out msg))
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! Файл доступен по ссылке:" + msg));
+                                        //удаляем исходный файл
+                                        try
+                                        {
+                                            System.IO.File.Delete(fileToTransfer);
+                                        }
+                                        catch (Exception e)
+                                        {
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(false, msg));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_PCLOUD)
+                    {
+                        // проверка доступности устройства резервного копирования
+                        string msg = string.Empty;
+                        if (CloudDataApi.TestPCloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                            string fileToTransfer = string.Empty;
+                            BackupToDefaultFileSystem(id, item, cnnString, v, out fileToTransfer);
+                            if (v.Keys.Contains("CreateBackupDone"))
+                            {
+                                if (v["CreateBackupDone"].Item1)
+                                {
+                                    item.LastRun = DateTime.Now;
+                                    item.LastStatus = v["CreateBackupDone"].Item2;
+                                    DbContext.Current.Save(item);
+
+                                    if (CloudDataApi.UploadToPCloud(drive, fileToTransfer, out msg))
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! " + msg));
+                                        //удаляем исходный файл
+                                        try
+                                        {
+                                            System.IO.File.Delete(fileToTransfer);
+                                        }
+                                        catch (Exception e)
+                                        {
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(false, msg));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_B2CLOUD)
+                    {
+                        // проверка доступности устройства резервного копирования
+                        string msg = string.Empty;
+                        if (CloudDataApi.TestB2Cloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                            string fileToTransfer = string.Empty;
+                            BackupToDefaultFileSystem(id, item, cnnString, v, out fileToTransfer);
+                            if (v.Keys.Contains("CreateBackupDone"))
+                            {
+                                if (v["CreateBackupDone"].Item1)
+                                {
+                                    item.LastRun = DateTime.Now;
+                                    item.LastStatus = v["CreateBackupDone"].Item2;
+                                    DbContext.Current.Save(item);
+
+                                    if (CloudDataApi.UploadToB2Cloud(drive, fileToTransfer, out msg))
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! " + msg));
+                                        //удаляем исходный файл
+                                        try
+                                        {
+                                            System.IO.File.Delete(fileToTransfer);
+                                        }
+                                        catch (Exception e)
+                                        {
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(false, msg));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_YANDEXDISK)
+                    {
+                        // проверка доступности устройства резервного копирования
+                        string msg = string.Empty;
+                        if (CloudDataApi.TestYandexCloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                            string fileToTransfer = string.Empty;
+                            BackupToDefaultFileSystem(id, item, cnnString, v, out fileToTransfer);
+                            if (v.Keys.Contains("CreateBackupDone"))
+                            {
+                                if (v["CreateBackupDone"].Item1)
+                                {
+                                    item.LastRun = DateTime.Now;
+                                    item.LastStatus = v["CreateBackupDone"].Item2;
+                                    DbContext.Current.Save(item);
+
+                                    if (CloudDataApi.UploadToYandexCloud(drive, fileToTransfer, out msg))
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! " + msg));
+                                        //удаляем исходный файл
+                                        try
+                                        {
+                                            System.IO.File.Delete(fileToTransfer);
+                                        }
+                                        catch (Exception e)
+                                        {
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(false, msg));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
+                        }
+                    }
+                    else // неизвесный провайдер????
+                    {
+                        v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, "Не выполнено! Неизвестный и не поддерживаемый провайдер."));
+                    }
                 }
                 else
                 {
@@ -518,8 +698,18 @@ namespace MvcSqlServerWebBackup.Controllers
         private void BackupToDefaultFileSystem(string id, BackupTask item, string cnnString, 
             Dictionary<string, Tuple<bool, string>> v, 
             out string createdBakupFile,
-            string defaulLocation = @"C:\Backup\")
+            string defaulLocation = null)
         {
+            if (string.IsNullOrEmpty(defaulLocation))
+            {
+                defaulLocation = DbContext.Current.Config.BackupLocation;
+            }
+
+            if (!string.IsNullOrEmpty(defaulLocation) & !System.IO.Directory.Exists(defaulLocation))
+            {
+                System.IO.Directory.CreateDirectory(defaulLocation);
+            }
+
             var task = DbContext.Current.GetBackupTasks().FirstOrDefault(s => s.Id == id);
             string dbName = task.DbName;
             if (!dbName.StartsWith("["))

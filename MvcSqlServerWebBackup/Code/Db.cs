@@ -17,7 +17,7 @@ namespace MvcSqlServerWebBackup
         }
         public DbContext()
         {
-            
+            _config = new AppConfig();
         }
         /// <summary>
         /// Текущий контекст базы данных
@@ -219,11 +219,20 @@ namespace MvcSqlServerWebBackup
                 var data = AppConfig.Load(sPath);
                 _config = data;
             }
+            else if(_config==null)
+            {
+                _config = new AppConfig();
+            }
         }
 
         public AppConfig Config
         {
-            get { return _config; }
+            get
+            {
+                if(_config==null)
+                    _config = new AppConfig();
+                return _config;
+            }
             set { _config = value; }
         }
 

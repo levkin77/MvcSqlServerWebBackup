@@ -253,3 +253,4 @@ paket-files/
 /MvcSqlServerWebBackup/App_Data/BackupTasks.xml
 /MvcSqlServerWebBackup/App_Data/CloudDrives.xml
 /MvcSqlServerWebBackup/App_Data/ServerConnection.xml
+/MvcSqlServerWebBackup/App_Data/SiteSettings.xml

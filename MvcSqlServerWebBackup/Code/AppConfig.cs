@@ -5,13 +5,24 @@ using System.Xml.Serialization;
 
 namespace MvcSqlServerWebBackup
 {
-    public class AppConfig 
+    public class AppConfig
     {
+        public const string DefaultBackupLocation = @"C:\Backup";
         #region Свойства
+
+        public AppConfig()
+        {
+            _backupLocation = DefaultBackupLocation;
+        }
         /// <summary>
         /// Место создания резервных копий по умолчанию
         /// </summary>
-        public string BackupLocation { get; set; }
+        public string BackupLocation
+        {
+            get { return _backupLocation; }
+            set { _backupLocation = value; }
+        }
+
         /// <summary>
         /// Пароль zip архивов
         /// </summary>
@@ -19,6 +30,8 @@ namespace MvcSqlServerWebBackup
         #endregion
 
         private static object locker = new object();
+        private string _backupLocation;
+
         public static bool Save(string location, AppConfig values)
         {
             try

@@ -2,12 +2,12 @@
 @{
     ViewBag.Title = "Редактирование облачного диска";
     //style="display: none;"
-    var disableEditProvide = !string.IsNullOrEmpty(Model.Id);
+    //var disableEditProvide = !string.IsNullOrEmpty(Model.Id);
 
-    var locationIsHide = (Model.Provider != CloudDrive.PROVIDER_FILESYSTEM)
-        & (Model.Provider!=CloudDrive.PROVIDER_B2CLOUD);
+    //var locationIsHide = (Model.Provider != CloudDrive.PROVIDER_FILESYSTEM)
+    //    & (Model.Provider!=CloudDrive.PROVIDER_B2CLOUD);
 }
-@functions {
+@*@functions {
     object getHtmlAttributes(bool ReadOnly, string CssClass)
     {
         if (ReadOnly)
@@ -16,19 +16,27 @@
         }
         return new { @class = CssClass };
     }
-}
+}*@
+
 <h2>Редактирование облачного диска</h2>
-@using (Html.BeginForm())
+@if (Model.Provider == CloudDrive.PROVIDER_GOOGLEDRIVE)
+{
+    <a href="~/home/about#google">Помощь: как настроить, что заполнять...</a><br/>
+    <a href="https://accounts.google.com/ServiceLogin">Аккаунт Google</a><br/>
+    <a href="https://console.developers.google.com/iam-admin">IAM и администрирование</a>
+}
+@using (Html.BeginForm("Edit", "CloudDrive", FormMethod.Post ))
 {
     @Html.AntiForgeryToken()
     <div class="form-horizontal">
-        <h4>Текущее соединение: @Model.Name</h4>
+        <h4>Текущее хранилище: @Model.Name</h4>
         <hr />
         <div>
             @Html.ActionLink("Назад к списку", "Index")
         </div>
         @Html.ValidationSummary(true)
         @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model=> Model.Provider)
         <div class="form-group">
             @Html.LabelFor(model => model.Name, "Наименование", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -36,7 +44,7 @@
                 @Html.ValidationMessageFor(model => model.Name)
             </div>
         </div>
-        <div class="form-group">
+        @*<div class="form-group">
             @Html.LabelFor(m => m.Provider, "Провайдер", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownListFor(m => m.Provider, new List<SelectListItem>{
@@ -50,23 +58,24 @@
 
                new SelectListItem(){Text = "GoogleDrive", Value = CloudDrive.PROVIDER_GOOGLEDRIVE, Selected = @Model.Provider== CloudDrive.PROVIDER_GOOGLEDRIVE }
            },
-           @getHtmlAttributes(false, "form-control"))
+           new { @class = "form-control"  })
                 @*//@Html.TextBox("name", "value", @getHtmlAttributes(Model.ReadOnly, "test"))*@
 
-                @Html.ValidationMessageFor(m => m.Provider)
-            </div>
+                @*@Html.ValidationMessageFor(m => m.Provider)*@
+            @*</div>
+        </div>*@
+        
+@if (Model.Provider == CloudDrive.PROVIDER_FILESYSTEM | Model.Provider == CloudDrive.PROVIDER_GOOGLEDRIVE)
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Location, "Расположение", new {@class = "control-label col-md-2"})
+        <div class="col-md-10">
+            @Html.EditorFor(m => m.Location,
+                new {htmlAttributes = new {@class = "form-control"}})
+            @Html.ValidationMessageFor(m => m.Location)
         </div>
-        @if (!locationIsHide)
-        {
-            <div class="form-group">
-                @Html.LabelFor(m => m.Location, "Расположение", new {@class = "control-label col-md-2"})
-                <div class="col-md-10">
-                    @Html.EditorFor(m => m.Location,
-                        new {htmlAttributes = new {@class = "form-control"}})
-                    @Html.ValidationMessageFor(m => m.Location)
-                </div>
-            </div>
-        }
+    </div>
+}
         <div class="form-group">
             @Html.LabelFor(model => model.Uid, "Пользователь", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -81,13 +90,49 @@
                 @Html.ValidationMessageFor(model => model.Password)
             </div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Token, "Токен", new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Token, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Token)
+        @if (Model.Provider == CloudDrive.PROVIDER_YANDEXDISK)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Token, "Токен", new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Token, new {htmlAttributes = new {@class = "form-control"}})
+                    @Html.ValidationMessageFor(model => model.Token)
+                </div>
             </div>
-        </div>
+        }
+        @if (Model.Provider == CloudDrive.PROVIDER_GOOGLEDRIVE)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.ClientId, "Ид клиента", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ClientId, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ClientId)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.CertificateFile, "Файл сертификата", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.CertificateFile, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CertificateFile)
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CertificatePassword, "Пароль сертификата", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.CertificatePassword, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CertificatePassword)
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ServiceAccountEmail, "Сервисный Email", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ServiceAccountEmail, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ServiceAccountEmail)
+                </div>
+            </div>
+        }
         <div class="form-group">
             @Html.LabelFor(model => model.Memo,"Описание", new { @class = "control-label col-md-2" })
             <div class="col-md-10">

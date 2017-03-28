@@ -245,6 +245,11 @@
     <Compile Include="Code\CoreObject.cs" />
     <Compile Include="Code\Db.cs" />
     <Compile Include="Code\CloudDataApi.cs" />
+    <Compile Include="Code\GoogleDriveUploader\Authentication.cs" />
+    <Compile Include="Code\GoogleDriveUploader\GetFiles.cs" />
+    <Compile Include="Code\GoogleDriveUploader\GoogleDriveFile.cs" />
+    <Compile Include="Code\GoogleDriveUploader\IUploadHelper.cs" />
+    <Compile Include="Code\GoogleDriveUploader\UploadHelper.cs" />
     <Compile Include="Code\ServerConnection.cs" />
     <Compile Include="Code\ZipData.cs" />
     <Compile Include="Controllers\BackupTaskController.cs" />

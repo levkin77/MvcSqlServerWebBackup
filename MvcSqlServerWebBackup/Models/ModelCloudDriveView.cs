@@ -33,7 +33,22 @@
         /// Токен
         /// </summary>
         public string Token { get; set; }
-        
+        /// <summary>
+        /// Расположение файла сертификата
+        /// </summary>
+        public string CertificateFile { get; set; }
+        /// <summary>
+        /// Пароль сертификата
+        /// </summary>
+        public string CertificatePassword { get; set; }
+        /// <summary>
+        /// Сервисный email 
+        /// </summary>
+        public string ServiceAccountEmail { get; set; }
+        /// <summary>
+        /// Идентификатор клиента
+        /// </summary>
+        public string ClientId { get; set; }
     }
 
 }

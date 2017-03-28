@@ -4,8 +4,23 @@
 }
 <h2>@ViewBag.Title.</h2>
 <hr />
-
-@Html.ActionLink("Новое хранилище", "Edit", new { id = Guid.Empty })
+<div class="dropdown">
+    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <span class="glyphicon glyphicon-plus"></span>
+        Новое хранилище...
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_FILESYSTEM })">Файловая система</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_BACKUPDEVICE })">Серверное устройство</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_MEGA })">Mega</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_MAILRU })">Облако MailRu</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_B2CLOUD })">B2 Cloud Backblaze</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_PCLOUD })">pCloud</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_YANDEXDISK })">Яндекс Диск</a></li>
+        <li><a href="@Url.Action("Create", new { id = CloudDrive.PROVIDER_GOOGLEDRIVE })">Google Диск</a></li>
+    </ul>
+</div>
 <div class="table-responsive">
     <table class="table table-condensed table-striped table-hover">
         @if (Model.Count() == 0)

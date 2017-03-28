@@ -19,7 +19,11 @@ namespace MvcSqlServerWebBackup.Controllers
 
             return View(data.Select(s => new ModelCloudDriveView() { Id = s.Id, Name = s.Name, Provider = s.Provider}));
         }
-
+        /// <summary>
+        /// Редактирование данные
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Edit(string id)
         {
             if (id == null)
@@ -38,9 +42,18 @@ namespace MvcSqlServerWebBackup.Controllers
                 Location = item.Location,
                 Uid = item.Uid,
                 Password = item.Password,
-                Token = item.Token
+                Token = item.Token,
+                CertificateFile = item.CertificateFile,
+                CertificatePassword = item.CertificatePassword,
+                ServiceAccountEmail = item.ServiceAccountEmail,
+                ClientId = item.ClientId
             });
         }
+        /// <summary>
+        /// Создание нового хранилища по указанному провайдеру
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult Create(string id)
         {
@@ -54,9 +67,10 @@ namespace MvcSqlServerWebBackup.Controllers
 
             return View("Edit", model);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location, Uid, Password, Token")] ModelCloudDriveViewEdit item)
+        public ActionResult Edit([Bind(Include = "Id,Name,Memo, Provider,Location, Uid, Password, Token, CertificateFile, CertificatePassword,ServiceAccountEmail, ClientId")] ModelCloudDriveViewEdit item)
         {
             if (ModelState.IsValid)
             {
@@ -71,6 +85,10 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Uid = item.Uid;
                     v.Password = item.Password;
                     v.Token = item.Token;
+                    v.CertificateFile = item.CertificateFile;
+                    v.CertificatePassword = item.CertificatePassword;
+                    v.ServiceAccountEmail = item.ServiceAccountEmail;
+                    v.ClientId = item.ClientId;
                 }
                 else
                 {
@@ -83,6 +101,10 @@ namespace MvcSqlServerWebBackup.Controllers
                     v.Uid = item.Uid;
                     v.Password = item.Password;
                     v.Token = item.Token;
+                    v.CertificateFile = item.CertificateFile;
+                    v.CertificatePassword = item.CertificatePassword;
+                    v.ServiceAccountEmail = item.ServiceAccountEmail;
+                    v.ClientId = item.ClientId;
                     if (item.Id.Equals(Guid.Empty.ToString()))
                         v.NewId();
                 }
@@ -110,8 +132,12 @@ namespace MvcSqlServerWebBackup.Controllers
                 Location = item.Location,
                 Uid = item.Uid,
                 Password = item.Password,
-                Token = item.Token
-        });
+                Token = item.Token,
+                CertificateFile = item.CertificateFile,
+                CertificatePassword = item.CertificatePassword,
+                ServiceAccountEmail = item.ServiceAccountEmail,
+                ClientId = item.ClientId
+            });
         }
 
         public ActionResult Delete(string id)

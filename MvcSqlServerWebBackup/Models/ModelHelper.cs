@@ -86,6 +86,7 @@ namespace MvcSqlServerWebBackup.Models
             keys.Add("CreateBackupDone", "Создание резервной копии");
             keys.Add("CreateZipDone", "Сжатие резервной копии");
             keys.Add("TranferToCloudDriveId", "Загрузка в облочное хранилище");
+            keys.Add("RemoveCurrentBackupFile", "Удаление текущей резервной копии");
             
             if (keys.ContainsKey(key))
                 return keys[key];

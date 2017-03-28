@@ -100,7 +100,6 @@ namespace MvcSqlServerWebBackup
             }
 
         }
-
         
         public static bool UploadToMailRuCloud(CloudDrive value, string file, out string message)
         {
@@ -471,6 +470,82 @@ namespace MvcSqlServerWebBackup
                         client.UploadResource(bFileData, "/" + fInf.Name, true, null, CancellationToken.None).GetAwaiter().GetResult();
                     }
                     
+                    result = true;
+                    taskMessage = string.Empty;
+
+                }).GetAwaiter().GetResult();
+
+                message = string.Empty;
+                return result;
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                return false;
+            }
+
+        }
+
+        public static bool TestGoogleCloud(CloudDrive value, out string message)
+        {
+            bool result = false;
+            string errMessage = string.Empty;
+            try
+            {
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    try
+                    {
+                        GoogleDriveUploader.UploadHelper googleUploader = new GoogleDriveUploader.UploadHelper();
+
+                        byte[] certificateData = System.IO.File.ReadAllBytes(value.CertificateFile);
+                        System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = 
+                        new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateData, value.CertificatePassword, 
+                        System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+
+                        googleUploader.Connect(value.ClientId, value.Uid, value.ServiceAccountEmail, certificate, value.Location, value.Password);
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        result = false;
+                        errMessage = e.Message;
+                    }
+                }).GetAwaiter().GetResult();
+
+                message = errMessage;
+                return result;
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                return false;
+            }
+
+        }
+
+        public static bool UploadToGoogleCloud(CloudDrive value, string file, out string message)
+        {
+            bool result = false;
+            string uploadLink = string.Empty;
+            string taskMessage = string.Empty;
+            try
+            {
+                System.Threading.Tasks.Task.Run(() =>
+                {
+
+                    GoogleDriveUploader.UploadHelper googleUploader = new GoogleDriveUploader.UploadHelper();
+
+                    byte[] certificateData = System.IO.File.ReadAllBytes(value.CertificateFile);
+                    System.Security.Cryptography.X509Certificates.X509Certificate2 certificate =
+                    new System.Security.Cryptography.X509Certificates.X509Certificate2(certificateData, value.CertificatePassword,
+                    System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+
+                    googleUploader.Connect(value.ClientId, value.Uid, value.ServiceAccountEmail, certificate, value.Location, value.Password);
+
+                    byte[] byteArray = System.IO.File.ReadAllBytes(file);
+                    var insertedFile = googleUploader.InsertFile(file, null, byteArray, false);
+
                     result = true;
                     taskMessage = string.Empty;
 

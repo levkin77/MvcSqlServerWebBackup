@@ -266,6 +266,8 @@ namespace MvcSqlServerWebBackup.Controllers
                     {
                         v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
 
+                        if (string.IsNullOrEmpty(drive.Location))
+                            drive.Location = AppConfig.DefaultBackupLocation;
                         // проверка доступности файловой системы
                         if (!Directory.Exists(drive.Location))
                         {
@@ -498,6 +500,49 @@ namespace MvcSqlServerWebBackup.Controllers
                                         catch (Exception e)
                                         {
 
+                                        }
+                                    }
+                                    else
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(false, msg));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(false, msg));
+                        }
+                    }
+                    else if (drive.Provider == CloudDrive.PROVIDER_GOOGLEDRIVE)
+                    {
+                        // проверка доступности устройства резервного копирования
+                        string msg = string.Empty;
+                        if (CloudDataApi.TestGoogleCloud(drive, out msg))
+                        {
+                            v.Add("ValidateCloudDriveId", new Tuple<bool, string>(true, "Выполнено!"));
+                            string fileToTransfer = string.Empty;
+                            BackupToDefaultFileSystem(id, item, cnnString, v, out fileToTransfer);
+                            if (v.Keys.Contains("CreateBackupDone"))
+                            {
+                                if (v["CreateBackupDone"].Item1)
+                                {
+                                    item.LastRun = DateTime.Now;
+                                    item.LastStatus = v["CreateBackupDone"].Item2;
+                                    DbContext.Current.Save(item);
+
+                                    if (CloudDataApi.UploadToGoogleCloud(drive, fileToTransfer, out msg))
+                                    {
+                                        v.Add("TranferToCloudDriveId", new Tuple<bool, string>(true, "Выполнено! " + msg));
+                                        //удаляем исходный файл
+                                        try
+                                        {
+                                            System.IO.File.Delete(fileToTransfer);
+                                            v.Add("RemoveCurrentBackupFile", new Tuple<bool, string>(true, "Выполнено!"));
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            v.Add("RemoveCurrentBackupFile", new Tuple<bool, string>(false, "Не выполнено! " + msg));
                                         }
                                     }
                                     else
